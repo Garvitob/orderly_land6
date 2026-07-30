@@ -1752,11 +1752,21 @@ svg {
   flex: 0 0 auto;
 }
 
-/* Lifts the hit area to 44px without changing the painted pill (Â§11). */
+/* Lifts the hit area without changing the painted pill (Â§11). */
 .otoggle::before {
   content: "";
   position: absolute;
   inset: -4px -2px;
+}
+
+/* Measured at 390x844 the overhang above only reached 41px, short of Â§11's
+   44px floor, so on a touch pointer the pill itself grows instead of leaning
+   on an invisible box the nav was clipping. The knob is inset from top and
+   bottom, so it follows without any other change. */
+@media (pointer: coarse) {
+  .otoggle {
+    height: 44px;
+  }
 }
 
 .otoggle-knob {
@@ -1943,12 +1953,16 @@ svg {
 /* 62vh left ~400px of void under 150px of content, which read as four empty
    boxes. Sized to the content instead, and the mini-animation sits directly
    under the copy rather than being pushed to the floor. */
+/* 5 / -1 is EIGHT columns. It was 4 / -1, which is nine, and §5.2 and §8.6 both
+   name the break as an eight-column offset hanging right. */
 .panels {
-  grid-column: 4 / -1;
+  grid-column: 5 / -1;
   margin-top: var(--sp-tight);
   display: flex;
   gap: 2px;
-  height: clamp(360px, 44vh, 440px);
+  /* Taller than the old 44vh: the minis now carry a scrolling menu, a four
+     turn conversation and a full voice beat, and 44vh cut the last row off. */
+  height: clamp(400px, 52vh, 500px);
 }
 
 .panel {
@@ -2004,10 +2018,58 @@ svg {
   max-width: 26ch;
 }
 
+/* The mini-animation takes the rest of the panel. It used to sit at its own
+   content height under 150px of copy, which left a third of every open panel
+   empty and read as four blank slabs. */
 .panel-anim {
   margin-top: 4px;
+  flex: 1;
+  min-height: 0;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
+}
+
+/* §8.6's grid breaks to an 8-column offset hanging right, which left columns
+   1 to 3 under the copy holding nothing. The index fills them, and it is the
+   only place all four names are legible at once: an open panel hides its
+   neighbours' rotated titles. */
+.modes-index {
+  grid-column: 1 / 4;
+  align-self: start;
+  margin: var(--sp-tight) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.modes-index li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 10px;
+  align-items: baseline;
+  padding: 13px 0;
+  color: var(--text-2);
+  transition:
+    color 220ms var(--ease-out),
+    transform 220ms var(--ease-out);
+}
+
+.modes-index li + li {
+  border-top: 1px solid var(--rule);
+}
+
+/* No orange here: this section already spends its one accent on the open
+   panel's Label title (§4.2). Weight and position carry the state instead. */
+.modes-index li.is-on {
+  color: var(--text);
+  transform: translateX(5px);
+}
+
+.modes-index-n {
+  color: var(--text-2);
+}
+
+.modes-index li.is-on .modes-index-n {
+  color: var(--text);
 }
 
 /* Collapsed panels carry a hairline and a number so the row reads as a set of
@@ -2025,21 +2087,29 @@ svg {
   transition: transform 450ms var(--ease-out);
 }
 
+/* Ink, not orange. §4.2 allows ONE orange accent per section beyond the mark
+   and CTA fills, and §8.6 spends it on the open panel's Label title. A second
+   orange mark here also made an orange divider, which §4.2 forbids by name. */
 .panel.is-open::after {
-  background: var(--orange);
+  background: var(--text);
   transform: scaleX(1);
 }
 
+/* Anchored to the bottom, the way a real thread stacks. That also puts the
+   slack between the headline and the conversation rather than leaving a block
+   of nothing under it. */
 .mini-chat {
   display: grid;
-  gap: 6px;
+  gap: 7px;
   width: 100%;
+  align-content: end;
 }
 .mini-bubble {
   font-size: 13px;
   padding: 7px 10px;
   border-radius: var(--r-card);
-  animation: mini-cycle 4s ease-in-out infinite;
+  max-width: 92%;
+  animation: mini-cycle 6.4s ease-in-out infinite;
 }
 .mini-bubble.is-g {
   background: var(--surface);
@@ -2047,7 +2117,7 @@ svg {
 }
 .mini-bubble.is-o {
   background: var(--peach);
-  animation-delay: 0.9s;
+  justify-self: start;
 }
 
 @keyframes mini-cycle {
@@ -2068,19 +2138,60 @@ svg {
   }
 }
 
+/* The clip is what makes the list read as a menu you are scrolling through
+   rather than a four-row card. transform only, and the track carries the menu
+   twice so -50% lands exactly on the seam. */
+.mini-list-clip {
+  width: 100%;
+  overflow: hidden;
+}
+
+.mini-list-track {
+  display: grid;
+  animation: mini-scroll 26s linear infinite;
+}
+
+@keyframes mini-scroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
 .mini-list {
   width: 100%;
   display: grid;
   gap: 1px;
+  align-content: start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 .mini-list li {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
   gap: 8px;
   font-size: 12.5px;
-  padding: 6px 8px;
+  padding: 7px 8px;
   border-radius: var(--r-pip);
-  animation: mini-row 3.6s ease-in-out infinite;
+  animation: mini-row 4.5s ease-in-out infinite;
+}
+
+/* The note is what makes this read as a menu rather than a price list: it is
+   the modifier detail §8.6 promises ("every modifier in one place"). */
+.mini-row-name {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.mini-row-note {
+  font-size: 10.5px;
+  line-height: 1.3;
+  color: var(--text-2);
 }
 
 @keyframes mini-row {
@@ -2095,19 +2206,71 @@ svg {
   }
 }
 
+/* The strip alone was 20px of content in a 300px box. It now shows the whole
+   voice beat: what Orderly is doing, the envelope, what it heard, and the line
+   that lands on the ticket. Sound still lives inside a bounded panel, never as
+   ambient wallpaper (§5.1). */
 .mini-voice {
   width: 100%;
-  padding: 12px;
+  align-self: stretch;
+  padding: 16px;
   border-radius: var(--r-card);
   background: var(--surface);
+  display: grid;
+  gap: 12px;
+  /* The strip is the middle of a beat with a start and an end, so the cue sits
+     at the top and what landed on the ticket sits at the bottom. */
+  align-content: space-between;
+}
+
+.mini-voice-cue,
+.mini-voice-out {
+  color: var(--text-2);
+}
+
+.mini-transcript {
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .mini-upsell {
   width: 100%;
+  display: grid;
+  gap: 14px;
+  /* The suggestion arrives, the total moves. Separating them puts the cause at
+     the top and the effect at the floor of the panel. */
+  align-content: space-between;
+}
+
+/* Verbatim from the phone, so the suggestion a reader sees here is the one the
+   demo actually makes. */
+.mini-suggest {
+  font-size: 14px;
+  line-height: 1.45;
+  padding: 9px 11px;
+  border-radius: var(--r-card);
+  background: var(--peach);
+}
+
+.mini-upsell-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+}
+
+/* §10.4: the panels still explain themselves, they just stop moving. Each
+   mini holds its first frame, which is a legible state for all four. */
+@media (prefers-reduced-motion: reduce) {
+  .mini-list-track,
+  .mini-list li,
+  .mini-bubble {
+    animation: none;
+  }
+  .mini-bubble {
+    opacity: 1;
+    transform: none;
+  }
 }
 .mini-total {
   font-weight: 700;
@@ -2125,6 +2288,11 @@ svg {
   .modes-copy,
   .panels {
     grid-column: 1;
+  }
+  /* §11: panels stack and ALL are expanded, so every name is already legible
+     in place and the index would just repeat itself. */
+  .modes-index {
+    display: none;
   }
   .panels {
     flex-direction: column;
@@ -2291,22 +2459,40 @@ svg {
   display: none;
 }
 
+/* Two columns with explicit placement rather than one column with justify-self.
+   Nodes 1 and 4 hang left, 2 and 3 hang right, which is the shape the path
+   traces, and the free cell beside node 3 is where §8.9 puts the margin prose. */
 .journey-nodes {
   position: relative;
   z-index: 1;
   margin-top: var(--sp-normal);
   display: grid;
-  gap: var(--sp-breathe);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(24px, 4vw, 72px);
+  row-gap: var(--sp-breathe);
+  margin-bottom: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .jnode {
   max-width: 34rem;
 }
+.jnode:nth-child(1) {
+  grid-column: 1;
+  grid-row: 1;
+}
 .jnode:nth-child(2) {
-  justify-self: end;
+  grid-column: 2;
+  grid-row: 2;
 }
 .jnode:nth-child(3) {
-  justify-self: end;
+  grid-column: 2;
+  grid-row: 3;
+}
+.jnode:nth-child(4) {
+  grid-column: 1;
+  grid-row: 4;
 }
 
 /* Clickable milestone header. Numbered, because this genuinely IS a sequence,
@@ -2379,15 +2565,40 @@ svg {
   height: 96px;
 }
 
-.jchips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+/* §8.9's chips snap onto their LINE ITEMS. Without the lines they arrived from
+   nowhere and read as four loose pills, which is what made the milestone feel
+   like decoration rather than an explanation. Each row is a dish and the
+   modifier captured against it. */
+.jcaptured {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: 30rem;
 }
+
+.jcaptured li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 0;
+}
+
+.jcaptured li + li {
+  border-top: 1px solid var(--rule);
+}
+
+.jcap-item {
+  color: var(--text);
+}
+
 .jchip {
   background: var(--surface-2);
   color: var(--text);
   border: 1px solid var(--rule);
+  white-space: nowrap;
 }
 
 .jpills {
@@ -2441,11 +2652,26 @@ svg {
 }
 
 .journey-margin {
-  margin-top: var(--sp-normal);
-  max-width: 34rem;
+  grid-column: 1;
+  grid-row: 3;
+  align-self: end;
+  max-width: 30rem;
 }
 
 @media (max-width: 1023px) {
+  /* §11: four stacked nodes down a straight line, so the two-column stagger
+     and the explicit rows both go. */
+  .journey-nodes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .jnode:nth-child(1),
+  .jnode:nth-child(2),
+  .jnode:nth-child(3),
+  .jnode:nth-child(4),
+  .journey-margin {
+    grid-column: 1;
+    grid-row: auto;
+  }
   .journey-svg {
     display: none;
   }

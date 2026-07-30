@@ -74,6 +74,26 @@ export function TryLivePill() {
           },
         },
       );
+
+      /* §8.16 fixes this bottom centre, so it passes over content as the page
+         scrolls, which is what a floating CTA does. It must not do it to the
+         demo form: the pill exists to drive someone to that form, and once the
+         form is on screen it is both redundant and sitting on top of the
+         fields. It comes back if they scroll away without submitting. */
+      const lastCall = document.querySelector("#lastcall");
+      if (lastCall) {
+        gsap.to(node, {
+          autoAlpha: 0,
+          y: 26,
+          duration: reduced ? 0 : 0.2,
+          ease: "power2.in",
+          scrollTrigger: {
+            trigger: lastCall,
+            start: "top 88%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      }
     });
 
     return () => {

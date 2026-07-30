@@ -25,7 +25,7 @@ const CAPTIONS = [
   COPY.captions.handoff,
 ] as const;
 
-const UPSELL_TEXT = "Garlic fries with that? They go with the smash burger.";
+const UPSELL_TEXT = COPY.demoLines.upsell;
 
 /**
  * §8.4 THE GUEST. Answers: show me. What does my guest actually do?

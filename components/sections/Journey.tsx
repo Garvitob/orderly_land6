@@ -28,7 +28,18 @@ const NODES = [
   },
 ] as const;
 
-const CHIPS = ["no onions", "extra cheese", "make it mild", "gluten free"] as const;
+/* §8.9: the chips "fly in and snap onto their line items". They had no line
+   items to snap onto, so four pills arrived out of nowhere and the milestone
+   read as decoration. Each modifier now belongs to a dish, which is the whole
+   point of the node: a customization is captured against a line, not floating
+   next to an order. Dishes and modifiers are the demo's own. */
+const CAPTURED = [
+  { item: "1× Smash Burger", chip: "no onions" },
+  { item: "1× Mac and Cheese", chip: "extra cheese" },
+  { item: "1× Nashville Hot", chip: "make it mild" },
+  { item: "1× Farm Salad", chip: "gluten free" },
+] as const;
+
 const POS = ["Toast", "Square", "Clover", "Shift4"] as const;
 
 /**
@@ -101,29 +112,46 @@ export function Journey() {
           );
         }
 
-        // node 2: modifier chips snap onto their line items
+        // node 2: the order lines arrive, then each modifier snaps onto its own
         const chips = rootEl.querySelectorAll<HTMLElement>("[data-chip]");
+        const captured = rootEl.querySelectorAll<HTMLElement>("[data-captured]");
         if (reduced) {
           gsap.set(chips, { opacity: 1, x: 0, y: 0 });
+          gsap.set(captured, { opacity: 1, x: 0 });
         } else {
-          gsap.fromTo(
-            chips,
-            { opacity: 0, x: 26, y: -10 },
-            {
-              opacity: 1,
-              x: 0,
-              y: 0,
-              duration: 0.5,
-              ease: "back.out(2.2)",
-              stagger: 0.16,
+          gsap
+            .timeline({
               immediateRender: false,
               scrollTrigger: {
                 trigger: rootEl.querySelector("[data-node='orderly']"),
                 start: "top 72%",
                 once: true,
               },
-            },
-          );
+            })
+            .fromTo(
+              captured,
+              { opacity: 0, x: -14 },
+              {
+                opacity: 1,
+                x: 0,
+                duration: 0.46,
+                ease: "shift",
+                stagger: 0.09,
+              },
+            )
+            .fromTo(
+              chips,
+              { opacity: 0, x: 26, y: -10 },
+              {
+                opacity: 1,
+                x: 0,
+                y: 0,
+                duration: 0.5,
+                ease: "back.out(2.2)",
+                stagger: 0.16,
+              },
+              0.24,
+            );
         }
 
         // node 3: POS pills dock in sequence with slight overshoot
@@ -211,11 +239,19 @@ export function Journey() {
             .fromTo(modules, { opacity: 0 }, { opacity: 1, duration: 0.2, stagger: { each: 0.012, from: "random" }, ease: "none" }, 0.45);
         },
         orderly: () => {
-          gsap.fromTo(
-            q<HTMLElement>("[data-chip]"),
-            { opacity: 0, x: 26, y: -10 },
-            { opacity: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(2.2)", stagger: 0.16 },
-          );
+          gsap
+            .timeline()
+            .fromTo(
+              q<HTMLElement>("[data-captured]"),
+              { opacity: 0, x: -14 },
+              { opacity: 1, x: 0, duration: 0.46, ease: "shift", stagger: 0.09 },
+            )
+            .fromTo(
+              q<HTMLElement>("[data-chip]"),
+              { opacity: 0, x: 26, y: -10 },
+              { opacity: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(2.2)", stagger: 0.16 },
+              0.24,
+            );
         },
         pos: () => {
           gsap.fromTo(
@@ -450,13 +486,16 @@ export function Journey() {
               ) : null}
 
               {n.id === "orderly" ? (
-                <div className="jchips">
-                  {CHIPS.map((c) => (
-                    <span key={c} data-chip className="chip jchip">
-                      {c}
-                    </span>
+                <ul className="jcaptured">
+                  {CAPTURED.map((c) => (
+                    <li key={c.chip} data-captured>
+                      <span className="t-label jcap-item">{c.item}</span>
+                      <span data-chip className="chip jchip">
+                        {c.chip}
+                      </span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               ) : null}
 
               {n.id === "pos" ? (
@@ -489,15 +528,21 @@ export function Journey() {
             </div>
           </li>
         ))}
-      </ol>
 
-      <div className="journey-margin">
-        <h3 className="t-headline">We don&rsquo;t replace your system. We amplify it.</h3>
-        <p className="t-body sec-sub">
-          Orderly plugs into your existing point of sale with no new hardware.
-          Every order flows from the guest to the kitchen just as it should.
-        </p>
-      </div>
+        {/* §8.9 puts this "in the left margin between nodes 3 and 4". It sat
+            under node 4 instead, which left the whole left column empty for the
+            length of two milestones. Inside the list so it can take a grid cell
+            in that column; it carries no number and is not a milestone. */}
+        <li className="journey-margin">
+          <h3 className="t-headline">
+            We don&rsquo;t replace your system. We amplify it.
+          </h3>
+          <p className="t-body sec-sub">
+            Orderly plugs into your existing point of sale with no new hardware.
+            Every order flows from the guest to the kitchen just as it should.
+          </p>
+        </li>
+      </ol>
     </section>
   );
 }

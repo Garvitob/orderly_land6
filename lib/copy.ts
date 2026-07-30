@@ -58,6 +58,17 @@ export const COPY = {
     handoff: "Live demo. Type anything",
   },
 
+  /** The demo's own lines, shared so §8.6's panels and §8.4's phone say the
+   *  same thing in the same voice rather than drifting into two scripts. */
+  demoLines: {
+    upsell: "Garlic fries with that? They go with the smash burger.",
+    askGlutenFree: "is this gluten free?",
+    replyGlutenFree: "The farm salad is, and the Nashville hot without the bun.",
+    askMild: "something mildly spiced for my mom",
+    replyMild: "The mac and cheese has no heat at all. Three cheeses, very gentle.",
+    spoken: "and a vanilla shake",
+  },
+
   nav: {
     links: [
       { label: "How it works", href: "#guest" },
