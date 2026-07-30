@@ -9,6 +9,7 @@ import { Button, TextLink } from "@/components/primitives/Button";
 import { HeroVideo } from "./HeroVideo";
 import { Overheard } from "./Overheard";
 import { ScrollCue } from "./ScrollCue";
+import { Turn } from "@/components/act2/Turn";
 
 /**
  * §8.2 THE ROOM. Answers: what is this, and is it for someone like me?
@@ -40,6 +41,10 @@ export function Room() {
     const media = rootEl.querySelector<HTMLElement>(".room-media");
     const cue = rootEl.querySelector<HTMLElement>(".scrollcue");
     const lines = typeEl.querySelectorAll<HTMLElement>(":scope > *");
+    const dark = rootEl.querySelector<HTMLElement>("[data-turn-dark]");
+    const card = rootEl.querySelector<HTMLElement>("[data-turn-card]");
+    const paper = rootEl.querySelector<HTMLElement>("[data-turn-paper]");
+    const turnSpine = rootEl.querySelector<HTMLElement>("[data-turn-spine]");
 
     // §10.4: everything at its final position, no pin, no scrub, no split.
     if (prefersReducedMotion()) {
@@ -83,6 +88,20 @@ export function Room() {
             anticipatePin: 1,
             scrub: true,
             invalidateOnRefresh: true,
+            // §8.1: the nav lands at the turn. Driven off progress rather
+            // than a separate trigger so it can never disagree with the
+            // paper wipe. The attribute lives on <html> so Nav does not
+            // need to know Room exists.
+            onUpdate: (self) => {
+              // The paper wipes UP, so the nav strip is the LAST thing it
+              // covers. Landing the nav at 0.86 put an Oat bar across the top
+              // of a still-dark room. It lands when the paper actually
+              // reaches it, which is the very end of the wipe.
+              const phase = self.progress >= 0.99 ? "act3" : "act1";
+              if (document.documentElement.dataset.phase !== phase) {
+                document.documentElement.dataset.phase = phase;
+              }
+            },
           },
           defaults: { ease: "none" },
         });
@@ -102,9 +121,59 @@ export function Room() {
         // cue gone by 0.6
         if (cue) tl.to(cue, { opacity: 0, duration: 0.05 }, 0.55);
 
-        // 0.80 → 1 is the turn (§8.3), authored at step 7. The pin already
-        // reserves that scroll so adding it changes no geometry.
-        tl.to({}, { duration: 0.2 }, 0.8);
+        /* ── 0.80 → 1 · §8.3 THE TURN ──────────────────────────────────
+           Four things at once, all inside the tail of this same pin so the
+           whole turn is one scrubbed timeline and the pin releases into
+           Act III with nothing left running. */
+
+        // 1. the room goes dark. ease none, so it tracks scroll exactly.
+        if (dark) tl.to(dark, { opacity: 1, duration: 0.1 }, 0.8);
+
+        // 2. the title card, on the darkening plate. In at 0.86, out by 0.98.
+        if (card) {
+          tl.fromTo(
+            card,
+            { opacity: 0, y: 16 },
+            { opacity: 1, y: 0, duration: 0.04, immediateRender: false },
+            0.86,
+          );
+          // Out by 0.94, not 0.98. The paper sits above the card and its
+          // rising edge crosses the vertical centre at exactly 0.94, so a
+          // later exit left the card sliced in half for ~40px of scroll.
+          // Synchronised like this the paper appears to sweep the card away,
+          // which is the better read anyway.
+          tl.to(card, { opacity: 0, duration: 0.04 }, 0.9);
+        }
+
+        // 3. the paper wipes UP from the bottom edge. A wipe, not a fade.
+        if (paper) {
+          tl.fromTo(
+            paper,
+            { clipPath: "inset(100% 0 0 0)" },
+            {
+              clipPath: "inset(0% 0 0 0)",
+              duration: 0.12,
+              immediateRender: false,
+            },
+            0.88,
+          );
+        }
+
+        // 4. the printer starts. Feeds from the top, power2.out over the
+        //    equivalent of 600ms at this scrub rate.
+        if (turnSpine) {
+          tl.fromTo(
+            turnSpine,
+            { scaleY: 0 },
+            {
+              scaleY: 1,
+              duration: 0.1,
+              ease: "power2.out",
+              immediateRender: false,
+            },
+            0.9,
+          );
+        }
       });
 
       /* ── mobile: no pin, no scrub, one honest fade out ─────────────── */
@@ -119,6 +188,38 @@ export function Room() {
             toggleActions: "play none none reverse",
           },
         });
+
+        // §8.3 mobile: simplified and not scrubbed. The overlay darkens, the
+        // paper wipes up, and the title card shows on its own for 800ms on an
+        // onEnter rather than being tied to scroll position.
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: rootEl,
+            start: "bottom 92%",
+            once: true,
+          },
+        });
+
+        if (dark) tl.to(dark, { opacity: 1, duration: 0.5, ease: "none" }, 0);
+        if (card) {
+          tl.fromTo(
+            card,
+            { opacity: 0, y: 14 },
+            { opacity: 1, y: 0, duration: 0.4, ease: "shift" },
+            0.15,
+          ).to(card, { opacity: 0, duration: 0.3, ease: "none" }, 1.35);
+        }
+        if (paper) {
+          tl.fromTo(
+            paper,
+            { clipPath: "inset(100% 0 0 0)" },
+            { clipPath: "inset(0% 0 0 0)", duration: 0.7, ease: "shift" },
+            1.1,
+          );
+        }
+        tl.add(() => {
+          document.documentElement.dataset.phase = "act3";
+        }, 1.2);
       });
     }, rootEl);
 
@@ -130,11 +231,15 @@ export function Room() {
   }, []);
 
   return (
-    <section id="top" ref={root} className="room act1-scope">
+    // act1-scope sits on the inner type block, NOT on the section. The turn's
+    // paper resolves var(--surface) and must get the REAL theme Oat; scoping
+    // the whole section remapped --surface to the night plate and the paper
+    // wiped up invisibly, black on black.
+    <section id="top" ref={root} className="room">
       <HeroVideo videoRef={video} />
       <div className="room-scrim" aria-hidden="true" />
 
-      <div className="room-inner">
+      <div className="room-inner act1-scope">
         <div className="room-type" ref={typeBlock}>
           <div data-lift>
             <Label tone="orange" as="p">
@@ -162,6 +267,7 @@ export function Room() {
       </div>
 
       <ScrollCue />
+      <Turn />
     </section>
   );
 }

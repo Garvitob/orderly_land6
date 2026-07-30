@@ -66,7 +66,7 @@ export function Nav() {
   }, []);
 
   return (
-    <header className="onav act1-scope" data-phase="act1">
+    <header className="onav">
       <div className="onav-inner">
         <a className="onav-brand" href="#top">
           <Mark size={32} drawable pathRef={(el) => (markPath.current = el)} />

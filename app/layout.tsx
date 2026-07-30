@@ -45,6 +45,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-theme="light"
+      data-phase="act1"
       className={`${hanken.variable} ${instrument.variable}`}
       suppressHydrationWarning
     >

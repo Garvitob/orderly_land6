@@ -379,16 +379,64 @@ svg {
   letter-spacing: -0.005em;
 }
 
-/* Act I: nothing competes with the display type. */
-.onav[data-phase="act1"] {
-  background: transparent;
-  border-bottom-color: transparent;
+/* Act I: nothing competes with the display type. Phase lives on <html> so the
+   nav does not need to know which section is driving it. */
+.onav-links a {
+  opacity: 0;
+  transform: translateY(6px);
+  visibility: hidden;
+  transition:
+    opacity 220ms var(--ease-out),
+    transform 220ms var(--ease-out),
+    visibility 0ms linear 220ms;
 }
 
-.onav[data-phase="act1"] .onav-links {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
+/* At the turn the nav gains a surface fill, a hairline, and the centre links
+   fade up at 70ms stagger (§8.1). */
+:root[data-phase="act3"] .onav {
+  background: var(--surface);
+  border-bottom-color: var(--rule);
+}
+
+:root[data-phase="act3"] .onav-links a {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  transition-delay: var(--link-delay, 0ms);
+}
+
+.onav-links a:nth-child(1) {
+  --link-delay: 0ms;
+}
+.onav-links a:nth-child(2) {
+  --link-delay: 70ms;
+}
+.onav-links a:nth-child(3) {
+  --link-delay: 140ms;
+}
+.onav-links a:nth-child(4) {
+  --link-delay: 210ms;
+}
+
+/* Act I's nav sits on the plate, so it borrows the Act I tokens while the
+   phase is act1 and simply stops borrowing them afterwards. Remapping by
+   phase rather than by a static scope class means the act3 nav inherits the
+   real theme with no literal values re-declared anywhere. */
+:root[data-phase="act1"] .onav {
+  --text: var(--act1-text);
+  --text-2: var(--act1-text-2);
+  --rule: var(--act1-rule);
+  --surface-2: var(--act1-surface-2);
+  color: var(--act1-text);
+}
+
+/* Past 60px of Act III scroll the nav compresses (§8.1). Reversible and
+   interruptible because it is a CSS transition, not a keyframe. */
+:root[data-phase="act3"][data-compact="1"] .onav-inner {
+  padding-block: 6px;
+}
+:root[data-phase="act3"][data-compact="1"] .onav-brand svg {
+  transform: scale(0.92);
 }
 
 .onav-right {
@@ -502,6 +550,189 @@ svg {
   gap: 26px;
   margin-top: 34px;
   flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   §8.3 THE TURN · and §7.1 THE SPINE LAYOUT
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* §7.1, verbatim. minmax(0, 1fr) not 1fr: prevents grid blowout from long
+   unbreakable content, which is a real and common bug. */
+.act3-grid {
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  display: grid;
+  grid-template-columns: var(--spine) minmax(0, 1fr);
+}
+
+@media (max-width: 1279px) {
+  .act3-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .spine-col {
+    display: none;
+  }
+}
+
+.act3 {
+  position: relative;
+  background: var(--surface);
+}
+
+/* Every section is z-index 2 against the spine's 1, so the spine can never
+   sit over content even if a future layout change moves it. */
+.act3-content {
+  position: relative;
+  z-index: 2;
+  grid-column: 2;
+  min-width: 0;
+}
+
+@media (max-width: 1279px) {
+  .act3-content {
+    grid-column: 1;
+  }
+}
+
+.sec {
+  padding-block: var(--sp-normal);
+}
+
+/* Column 1. Sticky INSIDE the column, never fixed, so it cannot escape and
+   cannot cross content (§7.1). z-index 1 against every section's 2. */
+.spine-col {
+  position: relative;
+  z-index: 1;
+  grid-column: 1;
+}
+
+.spine-sticky {
+  position: sticky;
+  top: 96px;
+}
+
+.spine-paper {
+  position: relative;
+  width: 48px;
+  background: var(--surface-2);
+  transform-origin: top;
+}
+
+/* Perforations down both edges, as notches in the page colour. */
+.spine-perf {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 2.5px 4px, transparent 2.6px, var(--surface) 2.7px),
+    radial-gradient(circle at 2.5px 4px, transparent 2.6px, var(--surface) 2.7px);
+  background-size: 5px 8px;
+  background-repeat: repeat-y;
+  background-position:
+    left top,
+    right top;
+  pointer-events: none;
+}
+
+.spine-lines {
+  padding: 12px 7px;
+  display: grid;
+  gap: 7px;
+}
+
+.spine-line {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  display: grid;
+  gap: 1px;
+  line-height: 1.25;
+}
+
+.spine-line span:last-child {
+  opacity: 0.72;
+}
+
+/* Below 1280px: a 2px rail flush to the left viewport edge (§7.1, §11). */
+.rail {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: 40;
+  background: var(--rule);
+  pointer-events: none;
+}
+
+.rail-fill {
+  width: 2px;
+  height: 0;
+  background: var(--text-2);
+  transform-origin: top;
+}
+
+@media (min-width: 1280px) {
+  .rail {
+    display: none;
+  }
+}
+
+/* ── the three turn layers ─────────────────────────────────────────── */
+
+.turn-dark {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: var(--act1-bg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.turn-card {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  padding-inline: var(--gutter);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The only centred display type on the page. It is a title card. */
+.turn-card-line {
+  color: var(--act1-text);
+  text-align: center;
+}
+
+/* A wipe, never a fade. Sits above the card because the card is Oat type and
+   would vanish the instant paper appeared behind it. */
+.turn-paper {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: var(--surface);
+  clip-path: inset(100% 0 0 0);
+  pointer-events: none;
+}
+
+.turn-spine-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* Match the real spine's sticky offset so the stub does not sit under the nav,
+   and give it enough height to read as paper leaving a printer rather than a
+   single label appearing. */
+.turn-spine-layer .spine-col {
+  padding-top: 96px;
+}
+
+.turn-spine-layer .spine-paper {
+  transform: scaleY(0);
+  min-height: 190px;
 }
 
 /* §8.2 scroll cue. Bottom centre. */
