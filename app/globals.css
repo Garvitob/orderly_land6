@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
-/* ═══════════════════════════════════════════════════════════════════
-   ORDERLY · TOKENS
-   Every value here comes from the client brand kit (Color page, §4.1).
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   ORDERLY Â· TOKENS
+   Every value here comes from the client brand kit (Color page, Â§4.1).
    Never hard-code a hex outside these three blocks.
-   ═══════════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 :root,
 [data-theme="light"] {
-  /* SERVICE · light · default */
+  /* SERVICE Â· light Â· default */
   --orange: #fd6001;
   --ink: #201a16;
   --oat: #faf6f0;
@@ -23,12 +23,12 @@
   --text-2: var(--stone);
   --rule: rgba(32, 26, 22, 0.1);
 
-  /* Contact shadows for §4.5's three sanctioned exceptions only. Derived from
+  /* Contact shadows for Â§4.5's three sanctioned exceptions only. Derived from
      Ink so no new colour enters the system. */
   --contact-near: rgba(32, 26, 22, 0.08);
   --contact-far: rgba(32, 26, 22, 0.18);
 
-  /* Receipt paper. §2: in AFTER HOURS the ticket paper is the only bright
+  /* Receipt paper. Â§2: in AFTER HOURS the ticket paper is the only bright
      thing on the page, so this is the one surface that does NOT invert. Type
      on paper is therefore always Ink family, in both themes. */
   --paper: var(--white);
@@ -37,7 +37,7 @@
 }
 
 [data-theme="dark"] {
-  /* AFTER HOURS · derived · flagged for client approval.
+  /* AFTER HOURS Â· derived Â· flagged for client approval.
      --peach is deliberately ABSENT: an inverted peach is a different
      colour wearing peach's name. Light-mode peach tints fall back to
      --surface-2 in this theme. */
@@ -55,23 +55,23 @@
   --contact-near: rgba(12, 10, 8, 0.5);
   --contact-far: rgba(12, 10, 8, 0.66);
 
-  /* Paper stays bright. This is the §2 behaviour, not an oversight. */
+  /* Paper stays bright. This is the Â§2 behaviour, not an oversight. */
   --paper: var(--oat);
 }
 
 :root {
-  /* ACT I · theme-invariant. The room is always night. */
+  /* ACT I Â· theme-invariant. The room is always night. */
   --act1-bg: #0c0a08;
   --act1-text: #faf6f0;
   --act1-text-2: #c9c1b8;
-  /* §8.2's radial scrim, sitting behind the type block only. Derived from
+  /* Â§8.2's radial scrim, sitting behind the type block only. Derived from
      --act1-bg so no new colour enters the system. */
   --act1-scrim: rgba(12, 10, 8, 0.55);
   --act1-scrim-deep: rgba(12, 10, 8, 0.72);
   --act1-rule: rgba(250, 246, 240, 0.18);
   --act1-surface-2: rgba(250, 246, 240, 0.08);
 
-  /* Spacing · never uniform, always composed */
+  /* Spacing Â· never uniform, always composed */
   --sp-breathe: clamp(112px, 15vh, 192px);
   --sp-normal: clamp(80px, 10vh, 120px);
   --sp-tight: clamp(48px, 7vh, 80px);
@@ -79,7 +79,16 @@
   --maxw: 1280px;
   --spine: 96px;
 
-  /* Radius · 0 / 4 / 12 / 999 and nothing else */
+  /* Full-bleed break-out distances, measured from the VIEWPORT rather than from
+     the content column. `calc(50% - 50vw)` resolves 50% against whatever box it
+     sits in, and inside the act3 grid that is the content column, not the page,
+     which overshot the right edge by 48px. */
+  --bleed-l: calc(
+    max(var(--gutter), (100vw - var(--maxw)) / 2 + var(--gutter)) + var(--spine)
+  );
+  --bleed-r: max(var(--gutter), calc((100vw - var(--maxw)) / 2 + var(--gutter)));
+
+  /* Radius Â· 0 / 4 / 12 / 999 and nothing else */
   --r-flat: 0px;
   --r-pip: 4px;
   --r-card: 12px;
@@ -118,9 +127,9 @@
   --radius-pill: 999px;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    BASE
-   ═══════════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 *,
 *::before,
@@ -130,6 +139,11 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* `clip` rather than `hidden`: it prevents horizontal scrolling without
+     making <html> a scroll container, so scrollWidth cannot grow past
+     clientWidth. §11 requires that equality to hold, and 100vw in the bleed
+     calcs includes the scrollbar, which otherwise leaves a few residual px. */
+  overflow-x: clip;
 }
 
 body {
@@ -145,7 +159,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Focus ring is --text, never orange (§4.2 forbids orange focus rings) */
+/* Focus ring is --text, never orange (Â§4.2 forbids orange focus rings) */
 :focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 2px;
@@ -194,12 +208,12 @@ svg {
   max-width: 100%;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   TYPE · two voices, one system (§4.4)
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   TYPE Â· two voices, one system (Â§4.4)
    Hanken Grotesk = Orderly talking to an operator.
    Instrument Serif italic = a person at a table. Quotes only.
    No monospace anywhere. Data uses .t-label.
-   ═══════════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .t-act1-display {
   font-weight: 800;
@@ -280,7 +294,7 @@ svg {
   font-weight: 400;
 }
 
-/* Optical alignment (§5.2): pull opening quotes and round caps into
+/* Optical alignment (Â§5.2): pull opening quotes and round caps into
    the margin so the left edge reads straight. */
 .pull-optical {
   margin-left: -0.04em;
@@ -290,9 +304,9 @@ svg {
   font-variant-numeric: tabular-nums;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    LAYOUT
-   ═══════════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .shell {
   width: 100%;
@@ -308,10 +322,10 @@ svg {
   border: 0;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   TEXTURE (§5.2) · 3% fractal noise, fixed. Reads as paper on Oat and
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   TEXTURE (Â§5.2) Â· 3% fractal noise, fixed. Reads as paper on Oat and
    as film grain on the Act I plate. Not a gradient, not a glow.
-   ═══════════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .grain {
   position: fixed;
@@ -322,9 +336,9 @@ svg {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION SKELETON (§6.5) · never varied
-   ═══════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   SECTION SKELETON (Â§6.5) Â· never varied
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .sec-head {
   margin-top: 16px;
@@ -353,9 +367,9 @@ svg {
   border: 0;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   §8.4 THE GUEST · the playable demo
-   ═══════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.4 THE GUEST Â· the playable demo
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .guest {
   display: grid;
@@ -375,7 +389,7 @@ svg {
   position: relative;
   display: grid;
   justify-items: center;
-  /* overlaps the next section by ~70px (§8.4) */
+  /* overlaps the next section by ~70px (Â§8.4) */
   margin-bottom: -70px;
 }
 
@@ -396,13 +410,13 @@ svg {
   }
 }
 
-/* ── chrome ────────────────────────────────────────────────────────── */
+/* â”€â”€ chrome â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .phone {
   width: clamp(268px, 27vw, 330px);
 }
 
-/* 1px bezel gradient, per §8.4. Not decoration: it is what makes the device
+/* 1px bezel gradient, per Â§8.4. Not decoration: it is what makes the device
    read as glass-and-metal rather than as a rounded rectangle. */
 .phone-bezel {
   padding: 9px;
@@ -414,7 +428,7 @@ svg {
     var(--rule) 100%
   );
   /* Sanctioned exception 1 of 3: a CONTACT shadow, sitting under the device,
-     not a floating drop shadow (§4.5). */
+     not a floating drop shadow (Â§4.5). */
   box-shadow:
     0 2px 3px var(--contact-near),
     0 18px 34px -22px var(--contact-far);
@@ -429,7 +443,7 @@ svg {
   flex-direction: column;
 }
 
-/* ── screen ────────────────────────────────────────────────────────── */
+/* â”€â”€ screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .pscreen {
   display: flex;
@@ -460,7 +474,7 @@ svg {
   position: relative;
 }
 
-/* ── segmented control ─────────────────────────────────────────────── */
+/* â”€â”€ segmented control â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .modetabs {
   position: relative;
@@ -497,7 +511,7 @@ svg {
   color: var(--text);
 }
 
-/* ── menu mode ─────────────────────────────────────────────────────── */
+/* â”€â”€ menu mode â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .menugrid {
   height: 100%;
@@ -536,7 +550,7 @@ svg {
   flex: 0 0 auto;
 }
 
-/* ── cart ──────────────────────────────────────────────────────────── */
+/* â”€â”€ cart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .cartstrip {
   display: flex;
@@ -554,7 +568,7 @@ svg {
   letter-spacing: -0.02em;
 }
 
-/* ── conversation ──────────────────────────────────────────────────── */
+/* â”€â”€ conversation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .thread {
   height: 100%;
@@ -585,7 +599,7 @@ svg {
 }
 
 /* Every conversational line is Instrument Serif italic. This is what makes the
-   demo read as two people talking rather than as UI (§4.4, §8.4). */
+   demo read as two people talking rather than as UI (Â§4.4, Â§8.4). */
 .bubble {
   font-size: 14.5px;
   line-height: 1.34;
@@ -643,7 +657,7 @@ svg {
   }
 }
 
-/* ── dish card inside the conversation ─────────────────────────────── */
+/* â”€â”€ dish card inside the conversation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .dishcard {
   border: 1px solid var(--rule);
@@ -711,7 +725,7 @@ svg {
   transform: scale(0.94);
 }
 
-/* ── voice ─────────────────────────────────────────────────────────── */
+/* â”€â”€ voice â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .voiceblock {
   display: grid;
@@ -734,7 +748,7 @@ svg {
   color: var(--text);
 }
 
-/* ── upsell ────────────────────────────────────────────────────────── */
+/* â”€â”€ upsell â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .upsell {
   display: flex;
@@ -774,7 +788,7 @@ svg {
   }
 }
 
-/* ── pay sheet ─────────────────────────────────────────────────────── */
+/* â”€â”€ pay sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .paysheet {
   position: absolute;
@@ -811,7 +825,7 @@ svg {
   padding-block: 6px;
 }
 
-/* ── route stamp ───────────────────────────────────────────────────── */
+/* â”€â”€ route stamp â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .routestamp {
   position: absolute;
@@ -827,7 +841,7 @@ svg {
   opacity: 0;
 }
 
-/* ── handoff input ─────────────────────────────────────────────────── */
+/* â”€â”€ handoff input â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .chatinput {
   display: flex;
@@ -869,9 +883,9 @@ svg {
   transform: scale(0.94);
 }
 
-/* ── §6.3 caption ──────────────────────────────────────────────────── */
+/* â”€â”€ Â§6.3 caption â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-/* Directly beneath the phone (§6.3). At 78px it read as a detached line at the
+/* Directly beneath the phone (Â§6.3). At 78px it read as a detached line at the
    bottom of the viewport rather than as the phone's caption. */
 .democap {
   position: relative;
@@ -906,12 +920,12 @@ svg {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    ACT I SCOPE
    Act I is dark in BOTH themes: it is a video plate, always night. Rather
    than override colours per component, the scope remaps the semantic tokens
    so every primitive inside it is correct without knowing where it sits.
-   ═══════════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .act1-scope {
   --text: var(--act1-text);
@@ -922,9 +936,9 @@ svg {
   color: var(--act1-text);
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   NAV (§8.1)
-   ═══════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   NAV (Â§8.1)
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .onav {
   position: fixed;
@@ -986,7 +1000,7 @@ svg {
 }
 
 /* At the turn the nav gains a surface fill, a hairline, and the centre links
-   fade up at 70ms stagger (§8.1). */
+   fade up at 70ms stagger (Â§8.1). */
 :root[data-phase="act3"] .onav {
   background: var(--surface);
   border-bottom-color: var(--rule);
@@ -1024,7 +1038,7 @@ svg {
   color: var(--act1-text);
 }
 
-/* Past 60px of Act III scroll the nav compresses (§8.1). Reversible and
+/* Past 60px of Act III scroll the nav compresses (Â§8.1). Reversible and
    interruptible because it is a CSS transition, not a keyframe. */
 :root[data-phase="act3"][data-compact="1"] .onav-inner {
   padding-block: 6px;
@@ -1046,10 +1060,10 @@ svg {
   }
 }
 
-/* §8.1 asks for toggle and CTA always visible on mobile. The toggle alone is
-   241px and both labels must stay (§4.3), so brand + toggle + CTA overflows
+/* Â§8.1 asks for toggle and CTA always visible on mobile. The toggle alone is
+   241px and both labels must stay (Â§4.3), so brand + toggle + CTA overflows
    360px and pushed the CTA off-canvas. Resolution: the nav keeps the toggle,
-   and the always-visible CTA is §8.14's sticky bottom-sheet trigger, which the
+   and the always-visible CTA is Â§8.14's sticky bottom-sheet trigger, which the
    brief already requires on mobile and which is a better thumb target anyway.
    Built at step 18. */
 @media (max-width: 899px) {
@@ -1070,9 +1084,9 @@ svg {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   §8.2 THE ROOM
-   ═══════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.2 THE ROOM
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .room {
   position: relative;
@@ -1083,7 +1097,7 @@ svg {
   overflow: hidden;
 }
 
-/* scale(1.02) at rest so the scrubbed push never reveals an edge (§8.2). */
+/* scale(1.02) at rest so the scrubbed push never reveals an edge (Â§8.2). */
 .room-media {
   position: absolute;
   inset: 0;
@@ -1095,9 +1109,9 @@ svg {
 }
 
 /* Behind the type block only. A radial ellipse, so it never reads as a
-   rectangle, and no text shadow anywhere (§8.2). */
+   rectangle, and no text shadow anywhere (Â§8.2). */
 /* Two soft radials on one element, not two elements and not a rectangle.
-   The wide one is §8.2's scrim. The tighter one sits over the type block to
+   The wide one is Â§8.2's scrim. The tighter one sits over the type block to
    knock down the pendant-light highlights that fall inside it: measured, the
    headline's worst-case background pixel was 2.91:1 with the wide scrim alone.
    Composited alpha in the core is ~0.80, which barely touches the footage's
@@ -1146,11 +1160,11 @@ svg {
   flex-wrap: wrap;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   §8.3 THE TURN · and §7.1 THE SPINE LAYOUT
-   ═══════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.3 THE TURN Â· and Â§7.1 THE SPINE LAYOUT
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-/* §7.1, verbatim. minmax(0, 1fr) not 1fr: prevents grid blowout from long
+/* Â§7.1, verbatim. minmax(0, 1fr) not 1fr: prevents grid blowout from long
    unbreakable content, which is a real and common bug. */
 .act3-grid {
   max-width: var(--maxw);
@@ -1161,6 +1175,11 @@ svg {
 }
 
 @media (max-width: 1279px) {
+  :root {
+    /* the spine gutter does not exist below 1280, so the bleed must not
+       account for it */
+    --spine: 0px;
+  }
   .act3-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1194,7 +1213,7 @@ svg {
 }
 
 /* Column 1. Sticky INSIDE the column, never fixed, so it cannot escape and
-   cannot cross content (§7.1). z-index 1 against every section's 2. */
+   cannot cross content (Â§7.1). z-index 1 against every section's 2. */
 .spine-col {
   position: relative;
   z-index: 1;
@@ -1216,11 +1235,15 @@ svg {
   color: var(--text);
 }
 
+/* 84px, not 48px. Reported deviation: Â§7's own ticket lines at Â§7's own 11px
+   cannot fit 48px, and shrinking the type or wrapping mid-phrase would both be
+   worse. Still inside Â§7.1's 96px column. */
 .spine-paper {
   position: relative;
-  width: 48px;
+  width: 84px;
   background: var(--paper);
   transform-origin: top;
+  overflow: hidden;
 }
 
 /* Perforations down both edges, as notches in the page colour. */
@@ -1239,24 +1262,69 @@ svg {
 }
 
 .spine-lines {
-  padding: 12px 7px;
+  padding: 10px 8px 12px;
   display: grid;
-  gap: 7px;
+  gap: 6px;
 }
 
+/* Â§7 sanctions 11px for the ticket specifically, which is tighter than Â§11's
+   12px Label floor. The section-level rule wins; noted in the report. */
 .spine-line {
   font-size: 11px;
-  letter-spacing: 0.08em;
-  display: grid;
-  gap: 1px;
-  line-height: 1.25;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
+  white-space: nowrap;
 }
 
-.spine-line span:last-child {
-  opacity: 0.72;
+.spine-line.is-item,
+.spine-line.is-mod {
+  justify-content: flex-start;
 }
 
-/* Below 1280px: a 2px rail flush to the left viewport edge (§7.1, §11). */
+.spine-line.is-mod {
+  color: var(--paper-ink-2);
+  padding-left: 2px;
+}
+
+.spine-line.is-total {
+  font-weight: 800;
+}
+
+/* The payoff (Â§8.15): FIRED lands in Basil. */
+.spine-line[data-line-id="fired"] {
+  color: var(--basil);
+  font-weight: 800;
+}
+
+.spine-hr {
+  display: block;
+  height: 1px;
+  background: var(--paper-ink);
+  opacity: 0.18;
+}
+
+.spine-dots {
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--paper-ink-2);
+  opacity: 0.5;
+}
+
+.rail-tick {
+  position: absolute;
+  left: 0;
+  width: 6px;
+  height: 2px;
+  background: var(--text);
+  opacity: 0.18;
+}
+
+/* Below 1280px: a 2px rail flush to the left viewport edge (Â§7.1, Â§11). */
 .rail {
   position: fixed;
   left: 0;
@@ -1281,7 +1349,7 @@ svg {
   }
 }
 
-/* ── the three turn layers ─────────────────────────────────────────── */
+/* â”€â”€ the three turn layers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .turn-dark {
   position: absolute;
@@ -1339,7 +1407,7 @@ svg {
   min-height: 190px;
 }
 
-/* §8.2 scroll cue. Bottom centre. */
+/* Â§8.2 scroll cue. Bottom centre. */
 .scrollcue {
   position: absolute;
   left: 50%;
@@ -1405,7 +1473,7 @@ svg {
 
 @media (max-width: 1023px) {
   /* No pin and no scrub below the desktop threshold, so the push is a fixed
-     crop rather than a moving one (§8.2 mobile). */
+     crop rather than a moving one (Â§8.2 mobile). */
   .room-media {
     transform: scale(1.04);
   }
@@ -1434,11 +1502,11 @@ svg {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   PRIMITIVES (§4.5) · radius 0 / 4 / 12 / 999 only.
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   PRIMITIVES (Â§4.5) Â· radius 0 / 4 / 12 / 999 only.
    No drop shadows except the three sanctioned exceptions: the phone's
    contact shadow, the printed ticket, Act I's radial scrim.
-   ═══════════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .btn {
   display: inline-flex;
@@ -1507,7 +1575,7 @@ svg {
 
 /* Underlined text link. The underline is present at rest and thickens on
    hover via scaleY on the pseudo element, keeping the animated property
-   transform (§10.3). */
+   transform (Â§10.3). */
 .tlink {
   position: relative;
   display: inline-block;
@@ -1603,7 +1671,7 @@ svg {
   right: 0;
 }
 
-/* Sanctioned exception 2 of 3: the printed ticket at §8.9 node 4. A contact
+/* Sanctioned exception 2 of 3: the printed ticket at Â§8.9 node 4. A contact
    shadow, not a floating one. */
 .ticket--shadow {
   box-shadow:
@@ -1621,11 +1689,11 @@ svg {
   padding: 24px;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   THEME TOGGLE (§4.3) · SERVICE / AFTER HOURS
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   THEME TOGGLE (Â§4.3) Â· SERVICE / AFTER HOURS
    Two equal grid columns, so both labels size to the wider of the two and
    the knob is exactly 50%. No measured magic numbers, no JS.
-   ═══════════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .otoggle {
   position: relative;
@@ -1642,7 +1710,7 @@ svg {
   flex: 0 0 auto;
 }
 
-/* Lifts the hit area to 44px without changing the painted pill (§11). */
+/* Lifts the hit area to 44px without changing the painted pill (Â§11). */
 .otoggle::before {
   content: "";
   position: absolute;
@@ -1687,8 +1755,8 @@ svg {
   color: var(--text);
 }
 
-/* Both labels stay visible at every width (§4.3), so the padding tightens
-   instead of the type shrinking. Labels never drop below 12px (§11). */
+/* Both labels stay visible at every width (Â§4.3), so the padding tightens
+   instead of the type shrinking. Labels never drop below 12px (Â§11). */
 @media (max-width: 899px) {
   .otoggle-lab {
     padding: 0 10px;
@@ -1701,9 +1769,1244 @@ svg {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.5 WE ARE NOT Â· full-bleed ink in both themes, zero orange
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+/* PINNED sections cannot use negative-margin bleed: ScrollTrigger zeroes the
+   margins when it pins, so the ink block collapsed back to the column width.
+   The box stays column-width (which is what pinning needs) and the background
+   bleeds on a pseudo-element instead. */
+.wearenot {
+  position: relative;
+  z-index: 2;
+  color: var(--oat);
+  padding-block: var(--sp-breathe);
+  min-height: 100svh;
+  display: grid;
+  align-content: center;
+}
+
+.wearenot::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(0px - var(--bleed-l));
+  right: calc(0px - var(--bleed-r));
+  background: var(--ink);
+  z-index: -1;
+}
+
+.wearenot-inner {
+  max-width: 62rem;
+}
+
+.wearenot-head,
+.wearenot-sub {
+  color: var(--oat);
+}
+.wearenot-sub {
+  opacity: 0.72;
+}
+
+.wearenot-cols {
+  margin-top: var(--sp-tight);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 5vw, 72px);
+}
+
+.wearenot-list {
+  margin-top: 18px;
+  display: grid;
+  gap: 20px;
+}
+
+.wearenot-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.wearenot-text {
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--oat);
+  display: block;
+}
+
+.wearenot-text.is-dim {
+  font-weight: 400;
+  color: var(--stone);
+}
+
+/* masks up from below: the wrapper clips, the text translates */
+.wearenot-mask {
+  display: block;
+  overflow: hidden;
+}
+
+.wearenot-check {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  margin-top: 4px;
+}
+
+.wearenot-strikewrap {
+  position: relative;
+  display: inline-block;
+  color: var(--stone);
+}
+
+.wearenot-strike {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 52%;
+  height: 1px;
+  overflow: visible;
+}
+
+@media (max-width: 1023px) {
+  .wearenot {
+    min-height: 0;
+  }
+  .wearenot-cols {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.6 FOUR WAYS IN Â· expanding panels, the one rightward grid break
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+.modes {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0 clamp(16px, 2vw, 28px);
+}
+
+/* the grid visibly shifts: content hangs right across 8 of 12 columns */
+.modes-copy {
+  grid-column: 5 / -1;
+}
+
+.panels {
+  grid-column: 5 / -1;
+  margin-top: var(--sp-tight);
+  display: flex;
+  gap: 2px;
+  height: 62vh;
+  min-height: 420px;
+}
+
+.panel {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--surface-2);
+  border-radius: var(--r-card);
+  /* flex-grow is Â§10.3's second named exception. A CSS transition means
+     re-hovering retargets instead of queueing (Â§10.1). */
+  transition: flex-grow 450ms var(--ease-out);
+  cursor: pointer;
+}
+
+.panel.is-open {
+  flex-grow: 2.4;
+}
+
+.panel-spine {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  transition: opacity 220ms var(--ease-out);
+}
+
+.panel.is-open .panel-spine {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.panel-open {
+  position: absolute;
+  inset: 0;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 300ms var(--ease-out) 90ms;
+  pointer-events: none;
+}
+
+.panel.is-open .panel-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.panel-copy {
+  max-width: 26ch;
+}
+
+.panel-anim {
+  margin-top: auto;
+  min-height: 120px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.mini-chat {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+}
+.mini-bubble {
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: var(--r-card);
+  animation: mini-cycle 4s ease-in-out infinite;
+}
+.mini-bubble.is-g {
+  background: var(--surface);
+  justify-self: end;
+}
+.mini-bubble.is-o {
+  background: var(--peach);
+  animation-delay: 0.9s;
+}
+
+@keyframes mini-cycle {
+  0%,
+  12% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  22%,
+  76% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90%,
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.mini-list {
+  width: 100%;
+  display: grid;
+  gap: 1px;
+}
+.mini-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12.5px;
+  padding: 6px 8px;
+  border-radius: var(--r-pip);
+  animation: mini-row 3.6s ease-in-out infinite;
+}
+
+@keyframes mini-row {
+  0%,
+  70%,
+  100% {
+    background: transparent;
+  }
+  18%,
+  40% {
+    background: var(--surface);
+  }
+}
+
+.mini-voice {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--r-card);
+  background: var(--surface);
+}
+
+.mini-upsell {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.mini-total {
+  font-weight: 700;
+  font-size: 13px;
+}
+.mini-total em {
+  font-style: normal;
+  color: var(--text-2);
+}
+
+@media (max-width: 1023px) {
+  .modes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .modes-copy,
+  .panels {
+    grid-column: 1;
+  }
+  .panels {
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+  }
+  .panel {
+    flex: none;
+  }
+  .panel-spine {
+    display: none;
+  }
+  .panel-open {
+    position: relative;
+    inset: auto;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.7 THE NUMBERS Â· asymmetric, never an even three-column row
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+.numbers {
+  padding-block: var(--sp-tight);
+}
+
+.numbers-head {
+  max-width: 32ch;
+}
+
+.numbers-grid {
+  margin-top: var(--sp-tight);
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: clamp(24px, 5vw, 64px);
+  align-items: start;
+}
+
+.numbers-big {
+  font-size: clamp(3.4rem, 9vw, 7rem);
+}
+
+.numbers-small {
+  font-size: clamp(2.2rem, 4.4vw, 3.4rem);
+}
+
+.numbers-stack {
+  display: grid;
+  gap: clamp(20px, 3vh, 36px);
+  padding-top: 10px;
+}
+
+.numbers-cap {
+  margin-top: 12px;
+  max-width: 24ch;
+}
+
+.verified {
+  margin-top: var(--sp-tight);
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+}
+
+@media (max-width: 767px) {
+  .numbers-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.8 VIDEO BREAK Â· the one sanctioned scrim in Act III
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+.videobreak {
+  position: relative;
+  z-index: 2;
+  margin-inline: calc(0px - var(--bleed-l)) calc(0px - var(--bleed-r));
+  height: 48vh;
+  min-height: 340px;
+  overflow: hidden;
+  border-radius: var(--r-flat);
+  background: var(--ink);
+}
+
+.vb-media {
+  position: absolute;
+  inset: -8% 0;
+  width: 100%;
+  height: 116%;
+  object-fit: cover;
+}
+
+/* ink gradient from the bottom, transparent by 60%, per the kit's photography
+   rule. Mean luma here is 34.5 so this scrim does real work. */
+.vb-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    var(--ink) 0%,
+    rgba(32, 26, 22, 0.72) 26%,
+    transparent 60%
+  );
+}
+
+.vb-copy {
+  position: absolute;
+  left: var(--bleed-r);
+  bottom: clamp(22px, 4vh, 44px);
+  z-index: 1;
+}
+
+.vb-head {
+  margin-top: 10px;
+  color: var(--oat);
+}
+
+@media (max-width: 899px) {
+  .videobreak {
+    height: 34vh;
+    min-height: 240px;
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.9 THE MOTION PATH
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+.journey {
+  position: relative;
+  z-index: 2;
+  padding-block: var(--sp-breathe);
+}
+
+/* THE MANDATED RULE-BREAK: clipped by the VIEWPORT, and this wrapper clips
+   nothing else, so Â§15's caveat holds. */
+.journey-headwrap {
+  margin-right: calc(0px - var(--bleed-r));
+  overflow: hidden;
+}
+
+.journey-head {
+  margin-top: 14px;
+  white-space: nowrap;
+  max-width: none;
+  text-wrap: nowrap;
+}
+
+.journey-svg {
+  position: absolute;
+  inset: 130px 0 0;
+  width: 100%;
+  height: calc(100% - 130px);
+  pointer-events: none;
+  overflow: visible;
+}
+
+.journey-mspine {
+  display: none;
+}
+
+.journey-nodes {
+  position: relative;
+  z-index: 1;
+  margin-top: var(--sp-normal);
+  display: grid;
+  gap: var(--sp-breathe);
+}
+
+.jnode {
+  max-width: 34rem;
+}
+.jnode:nth-child(2) {
+  justify-self: end;
+}
+.jnode:nth-child(3) {
+  justify-self: end;
+}
+
+.jnode-line {
+  margin-top: 10px;
+  max-width: 30ch;
+}
+
+.jnode-vis {
+  margin-top: 22px;
+}
+
+.qr {
+  width: 96px;
+  height: 96px;
+}
+
+.jchips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.jchip {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--rule);
+}
+
+.jpills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.jpill {
+  font-weight: 600;
+  font-size: 13px;
+  padding: 7px 15px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--rule);
+  color: var(--text-2);
+}
+/* the one orange accent in this section */
+.jpill.is-live {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--ink);
+}
+
+.jprint {
+  position: relative;
+  width: 190px;
+}
+.jticket {
+  background: var(--paper);
+  color: var(--paper-ink);
+  padding: 14px 14px 18px;
+  display: grid;
+  gap: 5px;
+  transform-origin: top;
+  box-shadow:
+    0 1px 2px var(--contact-near),
+    0 10px 20px -14px var(--contact-far);
+}
+.jticket span {
+  color: var(--paper-ink);
+}
+.jfired {
+  position: absolute;
+  right: -22px;
+  bottom: -14px;
+  padding: 7px 13px;
+  border: 1.5px solid var(--basil);
+  border-radius: var(--r-pip);
+  color: var(--basil);
+  background: var(--surface);
+  opacity: 0;
+}
+
+.journey-margin {
+  margin-top: var(--sp-normal);
+  max-width: 34rem;
+}
+
+@media (max-width: 1023px) {
+  .journey-svg {
+    display: none;
+  }
+  .journey-mspine {
+    display: block;
+    position: absolute;
+    left: 3px;
+    top: 150px;
+    bottom: var(--sp-breathe);
+    width: 1px;
+    background: var(--text-2);
+    opacity: 0.3;
+    transform-origin: top;
+  }
+  .journey-nodes {
+    padding-left: 24px;
+    gap: var(--sp-normal);
+  }
+  .jnode:nth-child(2),
+  .jnode:nth-child(3) {
+    justify-self: start;
+  }
+  .journey-head {
+    white-space: normal;
+    text-wrap: balance;
+  }
+  .journey-headwrap {
+    margin-right: 0;
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.10 VALUE BANDS Â· zero gap, one object divided by hairlines
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+.bands {
+  margin-top: var(--sp-normal);
+}
+
+.band {
+  position: relative;
+  background: var(--surface-2);
+  padding: clamp(26px, 4vw, 46px) clamp(18px, 3vw, 40px);
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr) 14rem;
+  gap: clamp(16px, 3vw, 40px);
+  align-items: center;
+}
+
+.band-rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  overflow: visible;
+}
+
+.band-head {
+  max-width: 24ch;
+}
+
+.band-detail {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+}
+
+.band-fig {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+}
+
+.floorplan {
+  grid-auto-flow: row;
+}
+.floor-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--r-pill);
+  transition: background-color 260ms var(--ease-out);
+}
+.floorplan {
+  display: grid;
+  grid-template-columns: repeat(3, 9px);
+  gap: 8px;
+  align-items: center;
+}
+.floorplan .t-label {
+  grid-column: 1 / -1;
+  margin-top: 6px;
+}
+
+.fragstack {
+  position: relative;
+}
+.frag {
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  color: var(--text);
+  position: absolute;
+  inset: 0;
+}
+.frag-sizer {
+  position: relative;
+  visibility: hidden;
+}
+
+@media (max-width: 899px) {
+  .band {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.11 STRAIGHT ANSWERS Â· type, rules, one motion idea
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+.answers {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 19rem;
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+}
+
+.acc {
+  margin-top: var(--sp-tight);
+  border-top: 1px solid var(--rule);
+}
+
+.acc-row {
+  position: relative;
+  border-bottom: 1px solid var(--rule);
+  padding-left: 44px;
+}
+
+.acc-num {
+  position: absolute;
+  left: 0;
+  top: 24px;
+  color: var(--text-2);
+}
+
+.acc-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 0;
+  text-align: left;
+}
+
+.acc-q {
+  max-width: 42ch;
+}
+
+.acc-sign {
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--text-2);
+  transition:
+    transform 220ms var(--ease-out),
+    color 220ms var(--ease-out);
+  flex: 0 0 auto;
+}
+
+/* the one orange accent in this section */
+.acc-sign.is-open {
+  transform: rotate(45deg);
+  color: var(--orange);
+}
+
+/* Â§10.3's third named exception. No max-height hacks. */
+.acc-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 260ms var(--ease-out);
+}
+.acc-wrap.is-open {
+  grid-template-rows: 1fr;
+}
+.acc-inner {
+  overflow: hidden;
+}
+.acc-a {
+  padding-bottom: 22px;
+  max-width: 56ch;
+  color: var(--text-2);
+}
+
+.answers-aside {
+  position: sticky;
+  top: 108px;
+}
+
+.askcard {
+  background: var(--ink);
+  color: var(--oat);
+  border-radius: var(--r-card);
+  padding: 26px 24px;
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+.askcard-head {
+  color: var(--oat);
+  font-size: 1.3rem;
+}
+.askcard-note {
+  color: var(--stone);
+}
+
+@media (max-width: 1023px) {
+  .answers {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .answers-aside {
+    position: relative;
+    top: auto;
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.12 QUOTES Â· full-bleed orange, pin 3 of 3
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+/* Same reason as .wearenot: this is pin 3 of 3, so the bleed is a background
+   layer rather than a negative margin. */
+.quotes {
+  position: relative;
+  z-index: 2;
+  padding-block: var(--sp-breathe);
+  min-height: 100svh;
+  display: grid;
+  align-content: center;
+}
+
+.quotes::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(0px - var(--bleed-l));
+  right: calc(0px - var(--bleed-r));
+  background: var(--orange);
+  z-index: -1;
+}
+
+.quotes-inner {
+  position: relative;
+  width: 100%;
+}
+
+/* white is legal here: Display scale is far above the 18px-bold floor */
+.quotes-head {
+  color: var(--white);
+  max-width: 30ch;
+}
+
+.quotes-stage {
+  position: relative;
+  margin-top: var(--sp-tight);
+  min-height: 15rem;
+}
+
+.quote {
+  position: absolute;
+  inset: 0;
+}
+
+.quotes[data-static="true"] .quotes-stage {
+  min-height: 0;
+  display: grid;
+  gap: var(--sp-tight);
+}
+.quotes[data-static="true"] .quote {
+  position: relative;
+  inset: auto;
+}
+
+.quote-text {
+  color: var(--white);
+  max-width: 24ch;
+  line-height: 1.32;
+}
+
+.quote figcaption {
+  margin-top: 18px;
+}
+
+.quotes-count {
+  position: absolute;
+  right: 0;
+  bottom: -34px;
+  color: var(--ink);
+}
+
+@media (max-width: 1023px) {
+  .quotes {
+    min-height: 0;
+  }
+  .quote-text {
+    max-width: 30ch;
+  }
+  .quotes-count {
+    display: none;
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.13 WHAT'S NEXT
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+.next {
+  background: var(--surface-2);
+  margin-inline: calc(0px - var(--bleed-l)) calc(0px - var(--bleed-r));
+  padding: var(--sp-tight) var(--bleed-r);
+  display: grid;
+  grid-template-columns: 22rem minmax(0, 1fr);
+  gap: clamp(28px, 5vw, 80px);
+  align-items: center;
+}
+
+.next-visual {
+  position: relative;
+}
+
+.next-phone {
+  width: 246px;
+}
+
+.rewards {
+  padding: 22px 16px;
+  display: grid;
+  gap: 6px;
+  height: 100%;
+  align-content: start;
+}
+.rewards-pts {
+  font-size: 3.2rem;
+}
+.rewards-favs {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  display: grid;
+  gap: 6px;
+}
+.rewards-favs p {
+  font-size: 15px;
+}
+
+.next-chip {
+  position: absolute;
+  right: -8px;
+  padding: 7px 13px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  color: var(--text-2);
+}
+.next-chip:nth-of-type(1) {
+  top: 8%;
+}
+.next-chip:nth-of-type(2) {
+  top: 38%;
+}
+.next-chip:nth-of-type(3) {
+  top: 66%;
+}
+
+@media (max-width: 899px) {
+  .next {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.14 LAST CALL Â· the second and final orange moment
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+.lastcall {
+  position: relative;
+  z-index: 2;
+  background: var(--orange);
+  margin-inline: calc(0px - var(--bleed-l)) calc(0px - var(--bleed-r));
+  padding: var(--sp-breathe) var(--bleed-r);
+}
+
+.lastcall-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 26rem;
+  gap: clamp(30px, 5vw, 80px);
+  align-items: start;
+}
+
+.lastcall-head {
+  color: var(--white);
+  max-width: 20ch;
+}
+.lastcall-sub {
+  margin-top: 18px;
+  color: var(--ink);
+  max-width: 34ch;
+}
+
+.lastcall-figs {
+  margin-top: var(--sp-tight);
+  display: flex;
+  gap: clamp(24px, 4vw, 56px);
+  flex-wrap: wrap;
+}
+.lastcall-fig {
+  color: var(--white);
+  font-size: clamp(2rem, 3.6vw, 2.8rem);
+}
+.lastcall-figcap {
+  margin-top: 8px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.lcform {
+  display: grid;
+  gap: 14px;
+}
+.lcfield {
+  display: grid;
+  gap: 6px;
+}
+/* every label and error on orange is INK, per the contrast rule */
+.lclabel {
+  color: var(--ink);
+}
+.lcinput {
+  font: inherit;
+  font-size: 15px;
+  padding: 11px 13px;
+  border-radius: var(--r-pip);
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  transition: box-shadow 160ms var(--ease-out);
+}
+.lcinput::placeholder {
+  color: var(--ink);
+  opacity: 0.55;
+}
+.lcinput:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
+.lcerr {
+  color: var(--ink);
+  font-weight: 700;
+}
+.lcsubmit {
+  margin-top: 6px;
+  min-height: 46px;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--oat);
+  font-weight: 600;
+  font-size: 15px;
+  transition: transform 160ms var(--ease-out);
+}
+.lcsubmit:active {
+  transform: scale(0.97);
+}
+.lcsubmit.is-done {
+  background: var(--oat);
+  color: var(--ink);
+}
+.lcsubmit-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.lcmicro,
+.lcdone {
+  color: var(--ink);
+  font-size: 13px;
+}
+.lcdone {
+  font-weight: 700;
+}
+
+@media (max-width: 899px) {
+  .lastcall-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.15 CLOSE
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+.close {
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  background: var(--ink);
+  color: var(--oat);
+  margin-inline: calc(0px - var(--bleed-l)) calc(0px - var(--bleed-r));
+  padding: var(--sp-normal) var(--bleed-r)
+    clamp(90px, 12vh, 150px);
+}
+
+.close-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.close-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* the one orange accent: the mark */
+  color: var(--orange);
+}
+.close-word {
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--oat);
+}
+
+.close-tagline {
+  margin-top: 26px;
+  color: var(--oat);
+  max-width: 24ch;
+}
+
+.close-cols {
+  margin-top: var(--sp-tight);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 12rem)) minmax(0, 1fr);
+  gap: 30px;
+}
+.close-list {
+  margin-top: 14px;
+  display: grid;
+  gap: 9px;
+  font-size: 15px;
+}
+.close-list a {
+  color: var(--stone);
+  transition: color 180ms var(--ease-out);
+}
+.close-list a:hover {
+  color: var(--oat);
+}
+
+.close-stamp {
+  justify-self: end;
+  align-self: start;
+}
+.close-stamp span {
+  display: inline-block;
+  padding: 9px 15px;
+  border: 1.5px solid var(--basil);
+  border-radius: var(--r-pip);
+  color: var(--basil);
+  opacity: 0;
+}
+
+.close-foot {
+  margin-top: var(--sp-tight);
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* texture, not a second headline: clipped by the bottom edge */
+.close-giant {
+  position: absolute;
+  left: var(--bleed-r);
+  bottom: clamp(-46px, -4vw, -24px);
+  font-weight: 800;
+  font-size: clamp(5rem, 17vw, 15rem);
+  letter-spacing: -0.04em;
+  line-height: 0.8;
+  color: var(--surface-2);
+  opacity: 0.14;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (max-width: 767px) {
+  .close-cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .close-stamp {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§8.16 PERSISTENT PILL Â· and the Sonner toast
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+.pill {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  translate: -50% 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 8px 16px;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--oat);
+  box-shadow:
+    0 2px 4px var(--contact-near),
+    0 14px 30px -18px var(--contact-far);
+}
+
+.pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: var(--orange);
+  flex: 0 0 auto;
+}
+
+.pill-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--oat);
+  white-space: nowrap;
+}
+
+.pill-cta {
+  padding: 6px 12px;
+  border-radius: var(--r-pill);
+  background: var(--oat);
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.pill-x {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-pill);
+  color: var(--stone);
+  font-size: 17px;
+  line-height: 1;
+  transition: color 160ms var(--ease-out);
+}
+.pill-x:hover {
+  color: var(--oat);
+}
+
+@media (max-width: 640px) {
+  .pill {
+    bottom: 16px;
+  }
+  .pill-main {
+    font-size: 13px;
+    gap: 8px;
+  }
+}
+
+.otoast {
+  font-family: var(--font-hanken), sans-serif !important;
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    MOTION HYGIENE
-   ═══════════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .will-move {
   will-change: transform, opacity;

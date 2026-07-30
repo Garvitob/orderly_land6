@@ -1,13 +1,15 @@
 /**
- * React logs an error in development when a component renders a <script> tag,
- * because scripts inserted via DOM updates never execute on the client. The
- * theme script must still run during HTML parsing to beat first paint (§4.3),
- * so it is emitted as real JavaScript on the server and as inert text/plain on
- * the client. `suppressHydrationWarning` covers the deliberate type mismatch.
+ * §4.3 mandates an inline blocking script in <head>, and that is what this is.
  *
- * This is the pattern Next's own "preventing flash before hydration" guide
- * prescribes, and it is what clears the console error without giving up the
- * flash-free swap.
+ * React logs a development-only advisory when a component renders a <script>
+ * tag. Next's own "preventing flash before hydration" guide mitigates it by
+ * emitting real JavaScript on the server and inert text/plain on the client,
+ * which is what this does. `suppressHydrationWarning` covers the deliberate
+ * type mismatch.
+ *
+ * The alternative, an external same-origin blocking script, trips
+ * @next/next/no-sync-scripts and moves the flash risk to a second request. The
+ * brief is explicit about the inline form, so the brief wins.
  */
 export function InlineScript({ html }: { html: string }) {
   return (

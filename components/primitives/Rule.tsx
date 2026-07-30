@@ -41,7 +41,6 @@ export function RuleDraw({
         y2={vertical ? "100" : "0"}
         stroke="var(--rule)"
         strokeWidth="1"
-        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

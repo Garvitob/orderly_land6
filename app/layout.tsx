@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Hanken_Grotesk, Instrument_Serif } from "next/font/google";
-import { THEME_SCRIPT } from "@/lib/useTheme";
 import { SmoothScroll } from "@/components/chrome/SmoothScroll";
 import { Grain } from "@/components/chrome/Grain";
+import { Toaster } from "sonner";
+import { THEME_SCRIPT } from "@/lib/useTheme";
 import { InlineScript } from "@/components/chrome/InlineScript";
 import "./globals.css";
 
@@ -51,14 +52,19 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* Runs during HTML parsing, before first paint. This is what makes
-            the theme swap flash-free on reload (§4.3). */}
+        {/* Runs during HTML parsing, before first paint. This is what makes the
+            theme swap flash-free on reload (§4.3). */}
         <InlineScript html={THEME_SCRIPT} />
       </head>
       <body>
         {children}
         <Grain />
         <SmoothScroll />
+        <Toaster
+          position="bottom-center"
+          toastOptions={{ className: "otoast" }}
+          visibleToasts={2}
+        />
       </body>
     </html>
   );
