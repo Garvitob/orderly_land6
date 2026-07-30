@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap, initGsap } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/lib/useReducedMotion";
+import { useMediaQuery, DESKTOP } from "@/lib/useMediaQuery";
 import { Label } from "@/components/primitives/Label";
 
 /** §8.12, the three real quotes, verbatim. Invent nothing. */
@@ -36,6 +37,11 @@ const QUOTES = [
  */
 export function Quotes() {
   const root = useRef<HTMLElement | null>(null);
+  /* Read through useSyncExternalStore rather than gsap.matchMedia. matchMedia
+     reverts its context and rebuilds synchronously inside the resize event,
+     which splices ScrollTrigger's _triggers while this pin's own init is
+     walking that array, and the walk then throws on _triggers[i].end. */
+  const isDesktop = useMediaQuery(DESKTOP);
 
   useEffect(() => {
     initGsap();
@@ -52,10 +58,9 @@ export function Quotes() {
       return;
     }
 
-    const mm = gsap.matchMedia();
-
     const ctx = gsap.context(() => {
-      mm.add("(min-width: 1024px)", () => {
+      if (isDesktop) {
+        delete rootEl.dataset.static;
         gsap.set(blocks, { opacity: 0, y: 30 });
         gsap.set(blocks[0], { opacity: 1, y: 0 });
 
@@ -85,9 +90,7 @@ export function Quotes() {
           tl.to(blocks[i + 1], { opacity: 1, y: 0, duration: 0.12 }, at + 0.06);
         }
         tl.to({}, { duration: 0.1 });
-      });
-
-      mm.add("(max-width: 1023px)", () => {
+      } else {
         rootEl.dataset.static = "true";
         blocks.forEach((b) => {
           gsap.fromTo(
@@ -103,14 +106,13 @@ export function Quotes() {
             },
           );
         });
-      });
+      }
     }, rootEl);
 
     return () => {
-      mm.revert();
       ctx.revert();
     };
-  }, []);
+  }, [isDesktop]);
 
   return (
     <section id="quotes" ref={root} className="quotes">

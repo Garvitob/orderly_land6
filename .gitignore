@@ -44,3 +44,8 @@ next-env.d.ts
 /.playwright-mcp/
 /_shots/
 s*-*.png
+
+# debug screenshots
+*.png
+!public/video/*.jpg
+!app/favicon.ico

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap, initGsap } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/lib/useReducedMotion";
+import { useMediaQuery, DESKTOP } from "@/lib/useMediaQuery";
 import { Label } from "@/components/primitives/Label";
 
 /** §1.1, verbatim. Do not reword. */
@@ -41,6 +42,10 @@ const PAIRS = [
  */
 export function WeAreNot() {
   const root = useRef<HTMLElement | null>(null);
+  /* Read through useSyncExternalStore rather than gsap.matchMedia, which
+     reverts and rebuilds synchronously inside the resize event and splices
+     ScrollTrigger's _triggers while this pin's init is walking it. */
+  const isDesktop = useMediaQuery(DESKTOP);
 
   useEffect(() => {
     initGsap();
@@ -61,14 +66,12 @@ export function WeAreNot() {
       return;
     }
 
-    const mm = gsap.matchMedia();
-
     const ctx = gsap.context(() => {
       gsap.set(strikes, { drawSVG: "0%" });
       gsap.set(checks, { drawSVG: "0%" });
       gsap.set(ares, { opacity: 0.16, yPercent: 40 });
 
-      mm.add("(min-width: 1024px)", () => {
+      if (isDesktop) {
         const tl = gsap.timeline({
           immediateRender: false,
           scrollTrigger: {
@@ -103,10 +106,8 @@ export function WeAreNot() {
 
         // Hold on the fourth pair before releasing.
         tl.to({}, { duration: 0.1 });
-      });
-
-      // Mobile: no pin. Each pair resolves on its own onEnter (§8.5).
-      mm.add("(max-width: 1023px)", () => {
+      } else {
+        // Mobile: no pin. Each pair resolves on its own onEnter (§8.5).
         PAIRS.forEach((_, i) => {
           const row = rootEl.querySelectorAll<HTMLElement>("[data-pair]")[i];
           if (!row) return;
@@ -123,14 +124,13 @@ export function WeAreNot() {
             )
             .to(checks[i], { drawSVG: "100%", duration: 0.22, ease: "none" }, 0.1);
         });
-      });
+      }
     }, rootEl);
 
     return () => {
-      mm.revert();
       ctx.revert();
     };
-  }, []);
+  }, [isDesktop]);
 
   return (
     <section id="wearenot" ref={root} className="wearenot">
