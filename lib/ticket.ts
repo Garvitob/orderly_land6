@@ -10,24 +10,26 @@ import type { TicketLine } from "./types";
  * text wrap mid-phrase, the paper is 84px inside §7.1's 96px column and the
  * item names are abbreviated the way a real kitchen ticket abbreviates them.
  *
- * `at` names the section whose onEnter prints the line, so the ticket and the
- * page cannot drift apart: if a section is not on the page, its line does not
- * print.
+ * `beat` is the §6.3 demo beat that prints the line. The ticket IS the order the
+ * demo is placing, so the two are driven by one clock: the line and the thing it
+ * records happen at the same moment. It used to key off page SECTIONS, which
+ * spread one order across the whole document and printed PAID three screens
+ * after the phone had taken payment.
  */
-export const TICKET: readonly (TicketLine & { at: string })[] = [
-  { id: "head", at: "guest", left: "Table 12", right: "7:42" },
-  { id: "rule-1", at: "guest", left: "", kind: "rule" },
-  { id: "scan", at: "guest", left: "Scan", right: "✓" },
-  { id: "asked", at: "wearenot", left: "Asked", right: "✓" },
-  { id: "i1", at: "modes", left: "1× smash", kind: "item" },
-  { id: "i1m", at: "modes", left: "› mild", kind: "mod" },
-  { id: "i2", at: "numbers", left: "1× mac", kind: "item" },
-  { id: "i3", at: "break", left: "1× shake", kind: "item" },
-  { id: "i4", at: "journey", left: "1× fries", kind: "item" },
-  { id: "rule-2", at: "value", left: "", kind: "rule" },
-  { id: "paid", at: "answers", left: "Paid", right: "32.45", kind: "total" },
-  { id: "routed", at: "quotes", left: "Toast", right: "✓" },
-  { id: "fired", at: "close", left: "Fired", right: "✓" },
+export const TICKET: readonly (TicketLine & { beat: number })[] = [
+  { id: "head", beat: 0, left: "Table 12", right: "7:42" },
+  { id: "rule-1", beat: 0, left: "", kind: "rule" },
+  { id: "scan", beat: 0, left: "Scan", right: "✓" },
+  { id: "i1", beat: 0, left: "1× smash", kind: "item" },
+  { id: "asked", beat: 1, left: "Asked", right: "✓" },
+  { id: "i2", beat: 2, left: "1× mac", kind: "item" },
+  { id: "i2m", beat: 2, left: "› mild", kind: "mod" },
+  { id: "i3", beat: 3, left: "1× shake", kind: "item" },
+  { id: "i4", beat: 4, left: "1× fries", kind: "item" },
+  { id: "rule-2", beat: 5, left: "", kind: "rule" },
+  { id: "paid", beat: 5, left: "Paid", right: "32.45", kind: "total" },
+  { id: "routed", beat: 6, left: "Toast", right: "✓" },
+  { id: "fired", beat: 7, left: "Fired", right: "✓" },
 ] as const;
 
 /** The print points that are real lines, for the mobile rail's tick marks. */

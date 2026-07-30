@@ -5,6 +5,7 @@ import { gsap, initGsap } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/lib/useReducedMotion";
 import { useInView } from "@/lib/useInView";
 import { COPY } from "@/lib/copy";
+import { setDemoBeat } from "@/lib/demo-beat";
 import { money } from "@/lib/menu";
 import { respond, echoOf, thinkingDelay } from "@/lib/demo-brain";
 import { Label } from "@/components/primitives/Label";
@@ -26,6 +27,13 @@ const CAPTIONS = [
 ] as const;
 
 const UPSELL_TEXT = COPY.demoLines.upsell;
+
+/** Published so §7's ticket prints in step with the demo (see lib/demo-beat). */
+function usePublishBeat(beat: number) {
+  useEffect(() => {
+    setDemoBeat(beat);
+  }, [beat]);
+}
 
 /**
  * §8.4 THE GUEST. Answers: show me. What does my guest actually do?
@@ -53,6 +61,7 @@ export function Guest() {
   );
 
   const { state, dispatch, total, takeOver } = useDemoLoop(inView);
+  usePublishBeat(state.beat);
 
   useEffect(() => {
     initGsap();

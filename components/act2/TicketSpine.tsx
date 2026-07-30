@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap, initGsap } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/lib/useReducedMotion";
 import { TICKET, PRINT_POINTS } from "@/lib/ticket";
+import { onDemoBeat } from "@/lib/demo-beat";
 
 /**
  * §7 THE TICKET SPINE. The one idea the page is remembered for.
@@ -14,13 +15,18 @@ import { TICKET, PRINT_POINTS } from "@/lib/ticket";
  * cannot escape and cannot clip a headline, which is what happened in a
  * previous build.
  *
- * Growth is one scrubbed ScrollTrigger over Act III driving `height`, which is
- * §10.3's first named exception to transform-and-opacity. Lines print from each
- * section's own onEnter with once:true, so nothing re-prints on scroll-up and
- * the ticket can only ever move forward.
+ * REPORTED DEVIATION FROM §7, at the client's explicit and repeated direction.
+ * §7 runs the strip the length of Act III and stamps FIRED at the footer. It is
+ * confined to §8.4 instead, and prints against the DEMO's beats rather than
+ * against page sections. The reasoning that won the argument: the ticket is the
+ * order that phone is placing, so printing PAID three screens after the phone
+ * took payment was the strip describing something that had already happened
+ * elsewhere. Held together, one screen, one order, the line and the thing it
+ * records landing on the same beat. Say the word and it goes back.
  *
- * The final line is the payoff: FIRED stamps in Basil with SERVICE COMPLETE
- * beside it (§8.15).
+ * Growth drives `height`, §10.3's first named exception to transform-and-opacity,
+ * and feeds only as far as the line that just printed. Forward only: a printed
+ * beat never un-prints, so the ticket can only ever move forward.
  */
 export function TicketSpine() {
   const col = useRef<HTMLDivElement | null>(null);
@@ -34,6 +40,7 @@ export function TicketSpine() {
 
     const lines = paperEl.querySelectorAll<HTMLElement>("[data-line-id]");
     const reduced = prefersReducedMotion();
+    let unsubscribe: (() => void) | null = null;
 
     // §10.4: the ticket is simply already complete, every line printed.
     if (reduced) {
@@ -58,44 +65,39 @@ export function TicketSpine() {
           overwrite: "auto",
         });
 
-      /* Nothing printed yet: just the perforated lead-in, and every line
-         explicitly hidden. immediateRender:false means a line's "from" state is
-         not applied until its own trigger fires, so without this they sit at
-         their natural opacity and the whole ticket, PAID and FIRED included,
-         reads as already printed the moment the paper is tall enough to show
-         it. The order has to build as the reader scrolls, not arrive done. */
-      gsap.set(lines, { opacity: 0 });
+      // Nothing printed yet: just the perforated lead-in.
+      gsap.set(lines, { opacity: 0, y: -4 });
       gsap.set(paperEl, { height: 26 });
 
-      // Each line prints when its own section arrives. once:true, always, and
-      // the paper feeds by exactly that line's height as it does.
-      lines.forEach((line) => {
-        const at = line.dataset.at;
-        if (!at) return;
-        const section = document.getElementById(at);
-        if (!section) return;
-
-        gsap.fromTo(
-          line,
-          { opacity: 0, y: -4 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.34,
-            ease: "shift",
-            immediateRender: false,
-            scrollTrigger: {
-              trigger: section,
-              start: "top 62%",
-              once: true,
-              onEnter: () => feedTo(line),
-            },
-          },
-        );
+      /* Printed against the DEMO's beat, not against page sections, so the line
+         and the thing it records land together. Forward only: a beat that has
+         already printed never un-prints, which is what keeps it a ticket rather
+         than a scrubbable timeline. */
+      let printed = -1;
+      unsubscribe = onDemoBeat((beat) => {
+        if (beat <= printed) return;
+        let last: HTMLElement | null = null;
+        lines.forEach((line) => {
+          const at = Number(line.dataset.beat);
+          if (Number.isNaN(at) || at > beat) return;
+          if (Number(gsap.getProperty(line, "opacity")) < 1) {
+            gsap.to(line, {
+              opacity: 1,
+              y: 0,
+              duration: 0.34,
+              ease: "shift",
+              overwrite: "auto",
+            });
+          }
+          last = line;
+        });
+        if (last) feedTo(last);
+        printed = beat;
       });
     }, colEl);
 
     return () => {
+      unsubscribe?.();
       ctx.revert();
     };
   }, []);
@@ -114,14 +116,14 @@ export function TicketSpine() {
                   key={l.id}
                   className="spine-hr"
                   data-line-id={l.id}
-                  data-at={l.at}
+                  data-beat={l.beat}
                 />
               ) : (
                 <p
                   key={l.id}
                   className={`t-label spine-line is-${l.kind ?? "row"}`}
                   data-line-id={l.id}
-                  data-at={l.at}
+                  data-beat={l.beat}
                 >
                   <span>{l.left}</span>
                   {l.right ? <span>{l.right}</span> : null}
@@ -152,6 +154,8 @@ export function TicketSpineMobile() {
     const act3 = document.querySelector<HTMLElement>(".act3");
     if (!fill || !act3) return;
 
+    let unsubscribe: (() => void) | null = null;
+
     if (prefersReducedMotion()) {
       gsap.set(fill, { scaleY: 1 });
       return;
@@ -174,22 +178,21 @@ export function TicketSpineMobile() {
         },
       );
 
-      // Tick marks light as their section arrives, matching the print points.
-      el.querySelectorAll<HTMLElement>("[data-tick]").forEach((tick) => {
-        const at = tick.dataset.tick;
-        if (!at) return;
-        const section = document.getElementById(at);
-        if (!section) return;
-        gsap.to(tick, {
-          opacity: 1,
-          duration: 0.28,
-          ease: "shift",
-          scrollTrigger: { trigger: section, start: "top 62%", once: true },
+      /* Tick marks light with the demo's beats, matching the print points the
+         desktop strip now uses, so the two are never telling different stories
+         about how far along the order is. */
+      const ticks = Array.from(el.querySelectorAll<HTMLElement>("[data-tick]"));
+      unsubscribe = onDemoBeat((beat) => {
+        ticks.forEach((tick) => {
+          const at = Number(tick.dataset.tick);
+          if (Number.isNaN(at) || at > beat) return;
+          gsap.to(tick, { opacity: 1, duration: 0.28, ease: "shift" });
         });
       });
     }, el);
 
     return () => {
+      unsubscribe?.();
       ctx.revert();
     };
   }, []);
@@ -201,7 +204,7 @@ export function TicketSpineMobile() {
         <span
           key={l.id}
           className="rail-tick"
-          data-tick={l.at}
+          data-tick={l.beat}
           style={{ top: `${((i + 1) / (PRINT_POINTS.length + 1)) * 100}%` }}
         />
       ))}

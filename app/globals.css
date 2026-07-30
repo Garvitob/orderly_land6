@@ -1333,6 +1333,18 @@ svg {
   position: relative;
   z-index: 1;
   grid-column: 1;
+  align-self: start;
+}
+
+/* REPORTED DEVIATION FROM §7, at the client's direction: the strip is confined
+   to §8.4 rather than running the length of Act III. The height matches the
+   demo's own 210vh hold, so it is held beside the phone for exactly as long as
+   the demo is, completes its order there, and leaves with it instead of
+   following the reader down eleven more sections. */
+@media (min-width: 1024px) {
+  .spine-col {
+    height: 210vh;
+  }
 }
 
 /* Fixed height, and the paper inside is absolutely positioned. The spine used
@@ -1342,7 +1354,9 @@ svg {
    release point and left the reader on a blank sheet of paper. */
 .spine-sticky {
   position: sticky;
-  top: 96px;
+  /* Same offset the demo's own two columns use, so the ticket's top edge lines
+     up with the copy block rather than floating above it. */
+  top: clamp(96px, 13vh, 132px);
   height: calc(100svh - 150px);
   pointer-events: none;
 }

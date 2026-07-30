@@ -293,6 +293,11 @@ export function useDemoLoop(active: boolean) {
           end: "bottom bottom",
           onUpdate: (self) => {
             if (stopped.current) return;
+            /* First pass only. Once the loop has run once it owns the playhead:
+               seeking across a repeat boundary re-fired beats against state the
+               reset had already cleared, which is how SENT TO TOAST ended up on
+               screen beside a conversation that was starting over. */
+            if (t.totalTime() >= t.duration()) return;
             const target = self.progress * t.duration();
             if (t.time() < target) t.time(target);
           },
