@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gsap, initGsap } from "@/lib/gsap";
+import { gsap, ScrollTrigger, initGsap } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/lib/useReducedMotion";
 import { useMediaQuery, DESKTOP } from "@/lib/useMediaQuery";
 import { Label } from "@/components/primitives/Label";
@@ -65,6 +65,8 @@ export function Modes() {
   const root = useRef<HTMLElement | null>(null);
   const [active, setActive] = useState(0);
   const isDesktop = useMediaQuery(DESKTOP);
+  /** While the cursor is on the bank the reader is driving, not the scroll. */
+  const hovering = useRef(false);
 
   useEffect(() => {
     initGsap();
@@ -81,6 +83,34 @@ export function Modes() {
         immediateRender: false,
         scrollTrigger: { trigger: rootEl, start: "top 74%", once: true },
       });
+
+      /* Scroll walks the four panels. §8.6 says the active panel follows scroll
+         position on tablet, and it should here too: hover is the only way a
+         reader on a mouse ever saw panels 2, 3 and 4, so anyone who simply
+         scrolled the page read one panel out of four. Hovering still wins while
+         the cursor is on the bank, because that is a direct manipulation and
+         §10.1 says direct manipulation is never overridden. */
+      ScrollTrigger.create({
+        trigger: rootEl,
+        start: "top bottom",
+        end: "bottom top",
+        onUpdate: () => {
+          if (hovering.current) return;
+          /* Measured live rather than read off self.progress. The section is
+             210vh and its height depends on clamps that move with the viewport,
+             so a cached start/end can be stale after a refresh and pin the
+             progress at 1, which parked every reader on panel four. */
+          const r = rootEl.getBoundingClientRect();
+          const travel = r.height - window.innerHeight;
+          if (travel <= 0) return;
+          const p = Math.min(1, Math.max(0, -r.top / travel));
+          const next = Math.min(
+            PANELS.length - 1,
+            Math.floor(p * PANELS.length),
+          );
+          setActive((cur) => (cur === next ? cur : next));
+        },
+      });
     }, rootEl);
 
     return () => {
@@ -90,6 +120,9 @@ export function Modes() {
 
   return (
     <section id="modes" ref={root} className="sec modes">
+      {/* Held while the four panels are walked through, the same way §8.4 is
+          held while its loop runs. Sticky, not a pin: §9's budget is three. */}
+      <div className="modes-stick">
       <div className="modes-copy">
         <Label tone="text-2">Every guest, their way</Label>
         <h2 className="t-headline sec-head">Four ways in. Your guests pick.</h2>
@@ -116,7 +149,13 @@ export function Modes() {
         ))}
       </ul>
 
-      <div className="panels" role="tablist" aria-label="Ways to order">
+      <div
+        className="panels"
+        role="tablist"
+        aria-label="Ways to order"
+        onMouseEnter={isDesktop ? () => (hovering.current = true) : undefined}
+        onMouseLeave={isDesktop ? () => (hovering.current = false) : undefined}
+      >
         {PANELS.map((p, i) => (
           <div
             key={p.id}
@@ -214,6 +253,7 @@ export function Modes() {
             </div>
           </div>
         ))}
+      </div>
       </div>
     </section>
   );

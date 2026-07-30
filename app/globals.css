@@ -2027,10 +2027,24 @@ svg {
    Â§8.6 FOUR WAYS IN Â· expanding panels, the one rightward grid break
    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-.modes {
+/* The grid moved onto .modes-stick so .modes itself can be a tall track for it
+   to be held in. The section was 887px, under one screen, so the four panels
+   flashed past in a single viewport of scroll and a reader who did not hover
+   met exactly one of them. */
+.modes-stick {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 0 clamp(16px, 2vw, 28px);
+}
+
+@media (min-width: 1024px) {
+  .modes {
+    min-height: 210vh;
+  }
+  .modes-stick {
+    position: sticky;
+    top: clamp(96px, 13vh, 132px);
+  }
 }
 
 /* The grid still visibly shifts, but the copy no longer starts at column 5:
@@ -2399,7 +2413,7 @@ svg {
 }
 
 @media (max-width: 1023px) {
-  .modes {
+  .modes-stick {
     grid-template-columns: minmax(0, 1fr);
   }
   .modes-copy,

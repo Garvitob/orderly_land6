@@ -58,7 +58,13 @@ export function TicketSpine() {
           overwrite: "auto",
         });
 
-      // Nothing printed yet: just the perforated lead-in.
+      /* Nothing printed yet: just the perforated lead-in, and every line
+         explicitly hidden. immediateRender:false means a line's "from" state is
+         not applied until its own trigger fires, so without this they sit at
+         their natural opacity and the whole ticket, PAID and FIRED included,
+         reads as already printed the moment the paper is tall enough to show
+         it. The order has to build as the reader scrolls, not arrive done. */
+      gsap.set(lines, { opacity: 0 });
       gsap.set(paperEl, { height: 26 });
 
       // Each line prints when its own section arrives. once:true, always, and

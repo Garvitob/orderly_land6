@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useReducer, useRef } from "react";
-import { gsap, initGsap } from "@/lib/gsap";
+import { gsap, ScrollTrigger, initGsap } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/lib/useReducedMotion";
 import { dish } from "@/lib/menu";
 import type { Mode } from "./ModeTabs";
@@ -279,7 +279,28 @@ export function useDemoLoop(active: boolean) {
 
     tl.current = t;
 
+    /* Scroll drives the playhead. §8.4 keeps its loop, but a reader who scrolls
+       quickly should see the beats arrive quickly rather than watch a timer run
+       at its own pace while they wait. Scrolling through the held section can
+       only push the playhead FORWARD, never drag it back, so beats never
+       un-happen and the ticket stays honest. Stop scrolling and the timeline
+       carries on by itself at its normal speed. */
+    const section = document.getElementById("guest");
+    const st = section
+      ? ScrollTrigger.create({
+          trigger: section,
+          start: "top top",
+          end: "bottom bottom",
+          onUpdate: (self) => {
+            if (stopped.current) return;
+            const target = self.progress * t.duration();
+            if (t.time() < target) t.time(target);
+          },
+        })
+      : null;
+
     return () => {
+      st?.kill();
       t.kill();
       tl.current = null;
     };
