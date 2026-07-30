@@ -391,6 +391,7 @@ svg {
   padding-top: clamp(8px, 3vw, 40px);
 }
 
+
 /* The eight beats of §6.3, stated at once. The live one is Ink, the ones
    already played hold at Stone, the ones ahead sit back. No orange: this
    section already spends its accent inside the phone, on MOST ORDERED. */
@@ -454,6 +455,28 @@ svg {
 .guest-phone-inner {
   transform: rotate(-3deg);
   transform-origin: center;
+}
+
+/* §8.4 is the one section that has to be LIVED IN. It runs a 22 second loop and
+   the section was 96vh, exactly one screen, so the reader arrived and left again
+   before the second beat had played: the demo was something you passed on the
+   way somewhere else rather than something you watched. Both columns are held
+   while the loop runs, then released.
+
+   position: sticky, NOT a pin. §9's budget is exactly three pins and this is not
+   one of them; §7.1 already uses sticky for the spine for the same reason. It
+   must sit after .guest-phone's own `position: relative` or that later rule wins
+   on equal specificity, which is what silently defeated the first attempt. */
+@media (min-width: 1024px) {
+  .guest {
+    min-height: 210vh;
+  }
+
+  .guest-copy,
+  .guest-phone {
+    position: sticky;
+    top: clamp(96px, 13vh, 132px);
+  }
 }
 
 @media (max-width: 899px) {
