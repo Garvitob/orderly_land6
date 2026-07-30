@@ -2,6 +2,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 import { ScrollTrigger } from "@/lib/gsap";
+import { refreshPreservingScroll } from "@/lib/lenis";
 
 export type Theme = "light" | "dark";
 
@@ -41,7 +42,15 @@ export function setTheme(next: Theme): void {
   listeners.forEach((l) => l());
   // Pinned trigger geometry is measured against painted layout, so refresh
   // once the swap has actually painted (§4.3).
-  window.setTimeout(() => ScrollTrigger.refresh(), 50);
+  //
+  // Wrapped because refresh measures every pin by jumping the document to
+  // scroll 0. Act I is a pin, so a swap made anywhere in Act III landed the
+  // reader back in the room, which is dark in BOTH themes by design and so
+  // read as "the toggle does nothing".
+  window.setTimeout(
+    () => refreshPreservingScroll(() => ScrollTrigger.refresh()),
+    50,
+  );
 }
 
 /**

@@ -49,7 +49,25 @@ export function Room() {
     // §10.4: everything at its final position, no pin, no scrub, no split.
     if (prefersReducedMotion()) {
       gsap.set(rootEl.querySelectorAll("[data-lift]"), { opacity: 1, y: 0 });
-      return;
+
+      /* The turn does not animate here, but the page still crosses from the
+         room to the paper and the nav has to cross with it. data-phase is
+         otherwise written only by the scrub and the mobile turn timeline,
+         neither of which exists on this path, so it stayed at the layout
+         default of "act1" for the whole session: Act I's Oat nav text sat on
+         Act III's Oat page, and the four centre links never left
+         visibility: hidden. An attribute swap on an observer is not motion,
+         so it is honest under this media query. */
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          document.documentElement.dataset.phase = entry.isIntersecting
+            ? "act1"
+            : "act3";
+        },
+        { threshold: 0 },
+      );
+      io.observe(rootEl);
+      return () => io.disconnect();
     }
 
     let split: SplitText | null = null;

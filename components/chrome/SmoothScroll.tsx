@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger, initGsap } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/lib/useReducedMotion";
+import { setLenis, refreshPreservingScroll } from "@/lib/lenis";
 
 /**
  * Lenis at lerp 0.09, driven from gsap.ticker so smooth scroll and every
@@ -21,6 +22,7 @@ export function SmoothScroll() {
     }
 
     const lenis = new Lenis({ lerp: 0.09 });
+    setLenis(lenis);
 
     const onScroll = () => ScrollTrigger.update();
     lenis.on("scroll", onScroll);
@@ -41,10 +43,15 @@ export function SmoothScroll() {
       window.setTimeout(refresh, ms),
     );
 
+    /* A resize can land mid-page, and refresh measures pins from scroll 0, so
+       this one has to put the reader back where they were. */
     let resizeTimer = 0;
     const onResize = () => {
       window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(refresh, 180);
+      resizeTimer = window.setTimeout(
+        () => refreshPreservingScroll(() => ScrollTrigger.refresh()),
+        180,
+      );
     };
     window.addEventListener("resize", onResize);
     window.addEventListener("orientationchange", onResize);
@@ -58,6 +65,7 @@ export function SmoothScroll() {
       lenis.off("scroll", onScroll);
       gsap.ticker.remove(tick);
       lenis.destroy();
+      setLenis(null);
     };
   }, []);
 
