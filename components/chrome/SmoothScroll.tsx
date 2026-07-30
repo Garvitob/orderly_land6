@@ -1,0 +1,45 @@
+"use client";
+
+import { useEffect } from "react";
+import Lenis from "lenis";
+import { gsap, ScrollTrigger, initGsap } from "@/lib/gsap";
+import { prefersReducedMotion } from "@/lib/useReducedMotion";
+
+/**
+ * Lenis at lerp 0.09, driven from gsap.ticker so smooth scroll and every
+ * ScrollTrigger share one clock (§10.3). Destroyed entirely under
+ * prefers-reduced-motion, which hands the page back to native scroll.
+ */
+export function SmoothScroll() {
+  useEffect(() => {
+    initGsap();
+
+    if (prefersReducedMotion()) {
+      // No Lenis at all. Native scroll, no pins, no scrubs.
+      ScrollTrigger.refresh();
+      return;
+    }
+
+    const lenis = new Lenis({ lerp: 0.09 });
+
+    const onScroll = () => ScrollTrigger.update();
+    lenis.on("scroll", onScroll);
+
+    const tick = (time: number) => lenis.raf(time * 1000);
+    gsap.ticker.add(tick);
+    gsap.ticker.lagSmoothing(0);
+
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener("load", refresh);
+    void document.fonts?.ready.then(refresh);
+
+    return () => {
+      window.removeEventListener("load", refresh);
+      lenis.off("scroll", onScroll);
+      gsap.ticker.remove(tick);
+      lenis.destroy();
+    };
+  }, []);
+
+  return null;
+}

@@ -1,26 +1,408 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════════
+   ORDERLY · TOKENS
+   Every value here comes from the client brand kit (Color page, §4.1).
+   Never hard-code a hex outside these three blocks.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root,
+[data-theme="light"] {
+  /* SERVICE · light · default */
+  --orange: #fd6001;
+  --ink: #201a16;
+  --oat: #faf6f0;
+  --white: #ffffff;
+  --peach: #ffe7d6;
+  --stone: #8c8177;
+  --basil: #1e7a46;
+
+  --surface: var(--oat);
+  --surface-2: var(--white);
+  --text: var(--ink);
+  --text-2: var(--stone);
+  --rule: rgba(32, 26, 22, 0.1);
+}
+
+[data-theme="dark"] {
+  /* AFTER HOURS · derived · flagged for client approval.
+     --peach is deliberately ABSENT: an inverted peach is a different
+     colour wearing peach's name. Light-mode peach tints fall back to
+     --surface-2 in this theme. */
+  --surface: #201a16;
+  --surface-2: #2a2320;
+  --text: #faf6f0;
+  --text-2: #8c8177;
+  --rule: rgba(250, 246, 240, 0.12);
+  --orange: #fd6001;
+  --orange-lift: #ff7a2e; /* small orange text on ink ONLY. every use logged. */
+  --basil: #2e9c5c;
+  --peach: var(--surface-2);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ACT I · theme-invariant. The room is always night. */
+  --act1-bg: #0c0a08;
+  --act1-text: #faf6f0;
+  --act1-text-2: #c9c1b8;
+
+  /* Spacing · never uniform, always composed */
+  --sp-breathe: clamp(112px, 15vh, 192px);
+  --sp-normal: clamp(80px, 10vh, 120px);
+  --sp-tight: clamp(48px, 7vh, 80px);
+  --gutter: clamp(20px, 5vw, 72px);
+  --maxw: 1280px;
+  --spine: 96px;
+
+  /* Radius · 0 / 4 / 12 / 999 and nothing else */
+  --r-flat: 0px;
+  --r-pip: 4px;
+  --r-card: 12px;
+  --r-pill: 999px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
+/* Expose semantic tokens to Tailwind as var() references, so utilities
+   follow the theme swap instead of baking a value at build time. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-orange: var(--orange);
+  --color-ink: var(--ink);
+  --color-oat: var(--oat);
+  --color-peach: var(--peach);
+  --color-stone: var(--stone);
+  --color-basil: var(--basil);
+  --color-rule: var(--rule);
+  --color-act1-bg: var(--act1-bg);
+  --color-act1-text: var(--act1-text);
+  --color-act1-text-2: var(--act1-text-2);
+
+  --font-sans: var(--font-hanken);
+  --font-serif: var(--font-instrument);
+
+  --radius-flat: 0px;
+  --radius-pip: 4px;
+  --radius-card: 12px;
+  --radius-pill: 999px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ═══════════════════════════════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════════════════════════════ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-hanken), sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.625;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Focus ring is --text, never orange (§4.2 forbids orange focus rings) */
+:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--orange);
+  color: var(--ink);
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TYPE · two voices, one system (§4.4)
+   Hanken Grotesk = Orderly talking to an operator.
+   Instrument Serif italic = a person at a table. Quotes only.
+   No monospace anywhere. Data uses .t-label.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.t-act1-display {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  font-size: clamp(2.2rem, 5.2vw, 4rem);
+  text-wrap: balance;
+}
+
+.t-display {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  font-size: clamp(2rem, 4.6vw, 3.5rem);
+  text-wrap: balance;
+}
+
+.t-headline {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.19;
+  font-size: clamp(1.6rem, 3.2vw, 2rem);
+  text-wrap: balance;
+}
+
+.t-subhead {
+  font-weight: 600;
+  line-height: 1.4;
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  letter-spacing: -0.005em;
+}
+
+.t-body {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.625;
+  max-width: 62ch;
+}
+
+.t-label {
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.33;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.t-figure {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(2.6rem, 5.6vw, 4rem);
+}
+
+.t-overheard {
+  font-family: var(--font-instrument), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.35;
+  font-size: clamp(1.05rem, 2vw, 1.5rem);
+}
+
+/* Instrument Serif italic, at quote scale. Never used for body or UI. */
+.t-quote {
+  font-family: var(--font-instrument), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.32;
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  text-wrap: balance;
+}
+
+.t-serif {
+  font-family: var(--font-instrument), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Optical alignment (§5.2): pull opening quotes and round caps into
+   the margin so the left edge reads straight. */
+.pull-optical {
+  margin-left: -0.04em;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════════════════════════════════ */
+
+.shell {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.rule {
+  height: 1px;
+  width: 100%;
+  background: var(--rule);
+  border: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TEXTURE (§5.2) · 3% fractal noise, fixed. Reads as paper on Oat and
+   as film grain on the Act I plate. Not a gradient, not a glow.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   THEME TOGGLE (§4.3) · SERVICE / AFTER HOURS
+   Two equal grid columns, so both labels size to the wider of the two and
+   the knob is exactly 50%. No measured magic numbers, no JS.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.otoggle {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  height: 36px;
+  padding: 3px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-pill);
+  background: transparent;
+  /* Never shrink below the labels. As a flex child it otherwise compresses
+     and clips "After hours" at narrow widths. */
+  flex: 0 0 auto;
+}
+
+/* Lifts the hit area to 44px without changing the painted pill (§11). */
+.otoggle::before {
+  content: "";
+  position: absolute;
+  inset: -4px -2px;
+}
+
+.otoggle-knob {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  border-radius: var(--r-pill);
+  background: var(--rule);
+  transition: transform 220ms cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+[data-theme="dark"] .otoggle-knob {
+  transform: translateX(100%);
+}
+
+.otoggle-lab {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding: 0 14px;
+  white-space: nowrap;
+  transition: color 200ms var(--ease-out);
+}
+
+.otoggle-lab--light {
+  color: var(--text);
+}
+.otoggle-lab--dark {
+  color: var(--text-2);
+}
+[data-theme="dark"] .otoggle-lab--light {
+  color: var(--text-2);
+}
+[data-theme="dark"] .otoggle-lab--dark {
+  color: var(--text);
+}
+
+/* Both labels stay visible at every width (§4.3), so the padding tightens
+   instead of the type shrinking. Labels never drop below 12px (§11). */
+@media (max-width: 899px) {
+  .otoggle-lab {
+    padding: 0 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .otoggle-knob {
+    transition: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOTION HYGIENE
+   ═══════════════════════════════════════════════════════════════════ */
+
+.will-move {
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-loop {
+    animation: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --rule: rgba(32, 26, 22, 0.4);
+  }
+  [data-theme="dark"] {
+    --rule: rgba(250, 246, 240, 0.45);
+  }
+  .t-body,
+  .t-subhead {
+    color: var(--text);
+  }
 }
