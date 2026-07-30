@@ -29,12 +29,32 @@ export function SmoothScroll() {
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
 
+    /* Trigger positions are measured against layout, and layout is not final
+       until fonts, the hero video and the first images have settled. A stale
+       measurement is what makes a pin hold past its release point, so refresh
+       is deliberately belt-and-braces here. */
     const refresh = () => ScrollTrigger.refresh();
     window.addEventListener("load", refresh);
     void document.fonts?.ready.then(refresh);
 
+    const settleTimers = [400, 1200, 2400].map((ms) =>
+      window.setTimeout(refresh, ms),
+    );
+
+    let resizeTimer = 0;
+    const onResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(refresh, 180);
+    };
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
+
     return () => {
       window.removeEventListener("load", refresh);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+      settleTimers.forEach((t) => window.clearTimeout(t));
+      window.clearTimeout(resizeTimer);
       lenis.off("scroll", onScroll);
       gsap.ticker.remove(tick);
       lenis.destroy();

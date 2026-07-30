@@ -1220,9 +1220,16 @@ svg {
   grid-column: 1;
 }
 
+/* Fixed height, and the paper inside is absolutely positioned. The spine used
+   to animate its own height in normal flow, which grew the act3 grid row,
+   which grew the document, which moved every ScrollTrigger start/end while
+   they were being read. That feedback loop is what held the Act I pin past its
+   release point and left the reader on a blank sheet of paper. */
 .spine-sticky {
   position: sticky;
   top: 96px;
+  height: calc(100svh - 150px);
+  pointer-events: none;
 }
 
 /* Paper never inverts, so type on it never inverts either. Same scoping trick
@@ -1244,6 +1251,14 @@ svg {
   background: var(--paper);
   transform-origin: top;
   overflow: hidden;
+}
+
+/* Inside the sticky column the paper is taken out of flow entirely, so its
+   growth can never reflow anything. */
+.spine-sticky > .spine-paper {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 /* Perforations down both edges, as notches in the page colour. */
@@ -1890,16 +1905,19 @@ svg {
   gap: 0 clamp(16px, 2vw, 28px);
 }
 
-/* the grid visibly shifts: content hangs right across 8 of 12 columns */
+/* The grid still visibly shifts, but the copy no longer starts at column 5:
+   that left four columns of dead space above the panels with nothing in them.
+   Copy runs 1 to 8, panels hang right from 4, so the shift is legible without
+   the void. */
 .modes-copy {
-  grid-column: 5 / -1;
+  grid-column: 1 / 9;
 }
 
 /* 62vh left ~400px of void under 150px of content, which read as four empty
    boxes. Sized to the content instead, and the mini-animation sits directly
    under the copy rather than being pushed to the floor. */
 .panels {
-  grid-column: 5 / -1;
+  grid-column: 4 / -1;
   margin-top: var(--sp-tight);
   display: flex;
   gap: 2px;
@@ -2262,6 +2280,62 @@ svg {
 }
 .jnode:nth-child(3) {
   justify-self: end;
+}
+
+/* Clickable milestone header. Numbered, because this genuinely IS a sequence,
+   and the ring draws itself as the node arrives. */
+.jnode-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+  text-align: left;
+}
+
+.jnode-num {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+}
+.jnode-num svg {
+  position: absolute;
+  inset: 0;
+  width: 34px;
+  height: 34px;
+  overflow: visible;
+}
+.jnode-num em {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.jnode-replay {
+  color: var(--text-2);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity 180ms var(--ease-out),
+    transform 180ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .jnode-head:hover .jnode-replay {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .jnode-head:hover .jnode-num em {
+    color: var(--orange);
+  }
+}
+
+.jnode-head:focus-visible .jnode-replay {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .jnode-line {

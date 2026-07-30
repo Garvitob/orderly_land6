@@ -48,6 +48,11 @@ export function Journey() {
   const root = useRef<HTMLElement | null>(null);
   const path = useRef<SVGPathElement | null>(null);
   const rider = useRef<SVGGElement | null>(null);
+  const players = useRef<Record<string, () => void>>({});
+
+  const replay = (id: string) => {
+    players.current[id]?.();
+  };
 
   useEffect(() => {
     initGsap();
@@ -190,6 +195,70 @@ export function Journey() {
 
       nodeTimelines();
 
+      /* Replayable milestones. The animation IS the explanation here, so a
+         reader who missed one should be able to run it again without hunting
+         for the scroll position that fired it. These play immediately and
+         carry no ScrollTrigger. */
+      const q = <T extends Element>(s: string) =>
+        Array.from(rootEl.querySelectorAll<T>(s));
+
+      players.current = {
+        guest: () => {
+          const finders = q<SVGRectElement>("[data-finder]");
+          const modules = q<SVGRectElement>("[data-module]");
+          const tl = gsap.timeline();
+          tl.fromTo(finders, { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.8, ease: "shift", stagger: 0.15 })
+            .fromTo(modules, { opacity: 0 }, { opacity: 1, duration: 0.2, stagger: { each: 0.012, from: "random" }, ease: "none" }, 0.45);
+        },
+        orderly: () => {
+          gsap.fromTo(
+            q<HTMLElement>("[data-chip]"),
+            { opacity: 0, x: 26, y: -10 },
+            { opacity: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(2.2)", stagger: 0.16 },
+          );
+        },
+        pos: () => {
+          gsap.fromTo(
+            q<HTMLElement>("[data-pill]"),
+            { opacity: 0, y: 14 },
+            { opacity: 1, y: 0, duration: 0.44, ease: "back.out(1.7)", stagger: 0.11 },
+          );
+        },
+        kitchen: () => {
+          const ticket = rootEl.querySelector<HTMLElement>("[data-printed]");
+          const fired = rootEl.querySelector<HTMLElement>("[data-fired]");
+          if (!ticket || !fired) return;
+          gsap
+            .timeline()
+            .fromTo(ticket, { scaleY: 0 }, { scaleY: 1, duration: 0.62, ease: "power2.out" })
+            .fromTo(
+              fired,
+              { opacity: 0, scale: 0.7, rotate: 22 },
+              { opacity: 1, scale: 1, rotate: 9, duration: 0.7, ease: "elastic.out(1, 0.4)" },
+              0.5,
+            )
+            .to(fired, { x: 3, duration: 0.05, repeat: 5, yoyo: true, ease: "none" }, 0.62)
+            .set(fired, { x: 0 });
+        },
+      };
+
+      // The milestone number ring draws itself as each node arrives.
+      q<SVGCircleElement>("[data-ring]").forEach((ring) => {
+        const node = ring.closest<HTMLElement>("[data-node]");
+        if (!node) return;
+        gsap.fromTo(
+          ring,
+          { drawSVG: reduced ? "100%" : "0%" },
+          {
+            drawSVG: "100%",
+            duration: 0.7,
+            ease: "shift",
+            immediateRender: false,
+            scrollTrigger: { trigger: node, start: "top 78%", once: true },
+          },
+        );
+      });
+
       /* ── the receipt rides the path, desktop only ──────────────────── */
       mm.add("(min-width: 1024px)", () => {
         if (!pathEl || !riderEl || reduced) return;
@@ -304,9 +373,36 @@ export function Journey() {
       <span className="journey-mspine" data-jspine aria-hidden="true" />
 
       <ol className="journey-nodes">
-        {NODES.map((n) => (
+        {NODES.map((n, i) => (
           <li key={n.id} className="jnode" data-node={n.id}>
-            <Label tone="text-2">{n.title}</Label>
+            {/* Clickable: replaying a milestone is the natural thing to want
+                when the animation is the explanation. */}
+            <button
+              type="button"
+              className="jnode-head"
+              onClick={() => replay(n.id)}
+              aria-label={`Replay ${n.title}`}
+            >
+              <span className="jnode-num" data-num>
+                <svg viewBox="0 0 34 34" aria-hidden="true">
+                  <circle
+                    data-ring
+                    cx="17"
+                    cy="17"
+                    r="15.5"
+                    fill="none"
+                    stroke="var(--text)"
+                    strokeWidth="1"
+                  />
+                </svg>
+                <em>{i + 1}</em>
+              </span>
+              <Label tone="text-2">{n.title}</Label>
+              <span className="jnode-replay t-label" aria-hidden="true">
+                Replay
+              </span>
+            </button>
+
             <p className="t-subhead jnode-line">{n.line}</p>
 
             <div className="jnode-vis">
