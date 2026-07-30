@@ -1,5 +1,12 @@
 import { ThemeToggle } from "@/components/chrome/ThemeToggle";
 import { MotionPathSmoke } from "@/components/dev/MotionPathSmoke";
+import { Mark } from "@/components/chrome/Mark";
+import { Label } from "@/components/primitives/Label";
+import { Button, TextLink } from "@/components/primitives/Button";
+import { Figure } from "@/components/primitives/Figure";
+import { Ticket } from "@/components/primitives/Ticket";
+import { Pip } from "@/components/primitives/Pip";
+import { PhotoSlot } from "@/components/primitives/PhotoSlot";
 
 /**
  * STEP 1 SPECIMEN. Temporary. This exists only to verify the §4.1 tokens,
@@ -125,6 +132,82 @@ export default function Page() {
               </p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <hr className="rule" />
+
+      <section style={{ paddingBlock: "var(--sp-tight)" }}>
+        <Label tone="text-2">Step 3 · primitives</Label>
+        <div style={{ height: 24 }} />
+
+        {/* The mark, one colour, three grounds. Exactly as the kit's Logo page. */}
+        <div
+          style={{
+            display: "flex",
+            gap: 1,
+            background: "var(--rule)",
+            width: "fit-content",
+          }}
+        >
+          <div style={{ background: "var(--surface-2)", padding: 28, color: "var(--orange)" }}>
+            <Mark size={44} title="Orderly" />
+          </div>
+          <div style={{ background: "var(--orange)", padding: 28, color: "var(--white)" }}>
+            <Mark size={44} />
+          </div>
+          <div style={{ background: "var(--ink)", padding: 28, color: "var(--oat)" }}>
+            <Mark size={44} />
+          </div>
+          <div style={{ background: "var(--surface-2)", padding: 28, color: "var(--orange)", display: "grid", placeItems: "center" }}>
+            <Mark size={24} />
+          </div>
+        </div>
+
+        <div style={{ height: 28 }} />
+
+        <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
+          <Button variant="solid">Get a demo</Button>
+          <Button variant="ink">Try it live</Button>
+          <Button variant="outline">Toast</Button>
+          <TextLink href="#see">See how it works</TextLink>
+          <Button variant="solid" disabled>
+            Sending
+          </Button>
+        </div>
+
+        <div style={{ height: 28 }} />
+
+        <div style={{ display: "flex", gap: 34, alignItems: "flex-start", flexWrap: "wrap" }}>
+          <Figure value="+23%" caption="average order value with conversational ordering" accent />
+          <Figure value="2.4x" caption="faster than a counter" />
+          <Figure value="0" caption="apps to download" />
+        </div>
+
+        <div style={{ height: 28 }} />
+
+        <div style={{ display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
+          <Ticket axis="y" shadow style={{ width: 208, padding: "16px 18px" }}>
+            <Label tone="text-2">Table 12</Label>
+            <div style={{ height: 8 }} />
+            <Label tone="text">1× butter chkn</Label>
+            <Label tone="text-2">› mild</Label>
+            <div style={{ height: 8 }} />
+            <Label tone="text">paid 32.45</Label>
+          </Ticket>
+
+          <Ticket axis="x" style={{ width: 48, height: 168 }} />
+
+          <div style={{ display: "flex", gap: 10, alignItems: "center", paddingTop: 6 }}>
+            <Pip />
+            <Pip tone="orange" />
+            <Pip tone="basil" />
+            <Label tone="text-2">table state</Label>
+          </div>
+
+          <div style={{ width: 220 }}>
+            <PhotoSlot ratio="4 / 3" name="Room at service" dimensions="1600 × 1200" />
+          </div>
         </div>
       </section>
 

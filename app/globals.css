@@ -22,6 +22,11 @@
   --text: var(--ink);
   --text-2: var(--stone);
   --rule: rgba(32, 26, 22, 0.1);
+
+  /* Contact shadows for §4.5's three sanctioned exceptions only. Derived from
+     Ink so no new colour enters the system. */
+  --contact-near: rgba(32, 26, 22, 0.08);
+  --contact-far: rgba(32, 26, 22, 0.18);
 }
 
 [data-theme="dark"] {
@@ -38,6 +43,10 @@
   --orange-lift: #ff7a2e; /* small orange text on ink ONLY. every use logged. */
   --basil: #2e9c5c;
   --peach: var(--surface-2);
+
+  /* On ink, a light contact shadow reads as haze. Deepen it instead. */
+  --contact-near: rgba(12, 10, 8, 0.5);
+  --contact-far: rgba(12, 10, 8, 0.66);
 }
 
 :root {
@@ -295,6 +304,193 @@ svg {
   pointer-events: none;
   opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PRIMITIVES (§4.5) · radius 0 / 4 / 12 / 999 only.
+   No drop shadows except the three sanctioned exceptions: the phone's
+   contact shadow, the printed ticket, Act I's radial scrim.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 22px;
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  transition: transform 160ms var(--ease-out);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+  transition: none;
+}
+
+/* Ink label on orange, not white: 15px is below the kit's 18px-bold floor. */
+.btn--solid {
+  background: var(--orange);
+  color: var(--ink);
+}
+
+/* Theme-relative, not the raw Ink constant. In AFTER HOURS the surface IS Ink,
+   so an ink-filled pill disappears into the page. Resolving against --text /
+   --surface gives ink-on-oat in SERVICE and oat-on-ink in AFTER HOURS, which
+   is the same intent inverted rather than the same hex twice. */
+.btn--ink {
+  background: var(--text);
+  color: var(--surface);
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--rule);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover:not(:disabled) {
+    transform: scale(1.02);
+  }
+  .btn:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+/* Declared after the variants so it wins. A faded orange fill reads as a
+   peach-tinted pill, which is a surface the token system does not contain,
+   so disabled drops out of brand colour entirely. */
+.btn:disabled {
+  background: var(--rule);
+  color: var(--text-2);
+  border-color: transparent;
+  opacity: 1;
+}
+
+/* Underlined text link. The underline is present at rest and thickens on
+   hover via scaleY on the pseudo element, keeping the animated property
+   transform (§10.3). */
+.tlink {
+  position: relative;
+  display: inline-block;
+  font-weight: 600;
+  font-size: 15px;
+  padding-block: 2px;
+}
+
+.tlink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform-origin: bottom;
+  transition: transform 180ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tlink:hover::after {
+    transform: scaleY(2);
+  }
+}
+
+.pip {
+  display: inline-block;
+  border-radius: var(--r-pill);
+  flex: 0 0 auto;
+}
+
+.ofig-cap {
+  margin-top: 10px;
+  max-width: 28ch;
+}
+
+.ruledraw {
+  display: block;
+  overflow: visible;
+}
+
+/* Receipt paper. Guillotined, never rounded. */
+.ticket {
+  position: relative;
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: var(--r-flat);
+}
+
+.ticket--perf-y::before,
+.ticket--perf-y::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background-image: radial-gradient(
+    circle at 4px 2.5px,
+    transparent 2.6px,
+    var(--surface) 2.7px
+  );
+  background-size: 8px 5px;
+  background-repeat: repeat-x;
+}
+.ticket--perf-y::before {
+  top: 0;
+}
+.ticket--perf-y::after {
+  bottom: 0;
+  transform: rotate(180deg);
+}
+
+.ticket--perf-x::before,
+.ticket--perf-x::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background-image: radial-gradient(
+    circle at 2.5px 4px,
+    transparent 2.6px,
+    var(--surface) 2.7px
+  );
+  background-size: 5px 8px;
+  background-repeat: repeat-y;
+}
+.ticket--perf-x::before {
+  left: 0;
+}
+.ticket--perf-x::after {
+  right: 0;
+}
+
+/* Sanctioned exception 2 of 3: the printed ticket at §8.9 node 4. A contact
+   shadow, not a floating one. */
+.ticket--shadow {
+  box-shadow:
+    0 1px 2px var(--contact-near),
+    0 8px 18px -12px var(--contact-far);
+}
+
+.photoslot {
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-flat);
+  text-align: center;
+  padding: 24px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
