@@ -1,4 +1,5 @@
 import { ThemeToggle } from "@/components/chrome/ThemeToggle";
+import { MotionPathSmoke } from "@/components/dev/MotionPathSmoke";
 
 /**
  * STEP 1 SPECIMEN. Temporary. This exists only to verify the §4.1 tokens,
@@ -127,7 +128,11 @@ export default function Page() {
         </div>
       </section>
 
-      <div style={{ height: "80vh" }} aria-hidden="true" />
+      <hr className="rule" />
+
+      <MotionPathSmoke />
+
+      <div style={{ height: "60vh" }} aria-hidden="true" />
     </main>
   );
 }
