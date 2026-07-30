@@ -3197,6 +3197,27 @@ svg {
   font-size: 15px;
 }
 
+/* §8.13's "recommended-for-you cards". Read off the real menu. */
+.rewards-rec {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  display: grid;
+  gap: 8px;
+}
+
+.rewards-rec-row {
+  display: grid;
+  gap: 1px;
+  font-size: 14px;
+}
+
+.rewards-rec-note {
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--text-2);
+}
+
 .next-chip {
   position: absolute;
   right: -8px;
