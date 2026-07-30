@@ -569,6 +569,11 @@ svg {
 }
 
 @media (max-width: 1023px) {
+  /* No pin and no scrub below the desktop threshold, so the push is a fixed
+     crop rather than a moving one (§8.2 mobile). */
+  .room-media {
+    transform: scale(1.04);
+  }
   .room-type {
     max-width: 100%;
   }
