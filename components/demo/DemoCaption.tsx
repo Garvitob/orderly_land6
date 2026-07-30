@@ -1,16 +1,22 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap, initGsap } from "@/lib/gsap";
-import { prefersReducedMotion } from "@/lib/useReducedMotion";
-
 /**
- * §6.3, and the brief says explicitly that this is not optional. A caption
- * line directly beneath the phone, Label style, --text-2, cross-fading 180ms.
+ * §6.3, and the brief says explicitly that this is not optional. A caption line
+ * directly beneath the phone, Label style, --text-2, cross-fading 180ms.
  *
- * The whole beat list is rendered and height-locked by a sizer holding the
- * longest caption, so the line can never reflow the layout as beats change,
- * and so a reader can never see two captions at once.
+ * Deliberately CSS, not GSAP. This is the interaction layer (§10.1): 180ms,
+ * ease-out, interruptible, and it belongs off the main thread.
+ *
+ * It was GSAP first and that was a bug: `ctx.revert()` on each beat change
+ * restored the *previous* fade-out to its pre-tween value, so retired captions
+ * popped back to full opacity and three lines stacked at once. A transition has
+ * no history to revert.
+ *
+ * The 180ms is spent as a hand-off, not a dissolve: 90ms out, then 90ms in via
+ * transition-delay, so two captions are never legible at the same time.
+ *
+ * Height is locked by a sizer carrying the longest caption, so the line can
+ * never reflow the layout as beats change.
  */
 export function DemoCaption({
   captions,
@@ -19,56 +25,19 @@ export function DemoCaption({
   captions: readonly string[];
   active: number;
 }) {
-  const wrap = useRef<HTMLDivElement | null>(null);
-  const previous = useRef<number>(-1);
-
   const longest = captions.reduce((a, b) => (b.length > a.length ? b : a), "");
 
-  useEffect(() => {
-    initGsap();
-    const el = wrap.current;
-    if (!el) return;
-    if (previous.current === active) return;
-
-    const lines = el.querySelectorAll<HTMLElement>("[data-cap]");
-    if (!lines.length) return;
-
-    const prev = previous.current;
-    previous.current = active;
-
-    if (prefersReducedMotion()) {
-      gsap.set(lines, { opacity: 0 });
-      gsap.set(lines[active], { opacity: 1 });
-      return;
-    }
-
-    const ctx = gsap.context(() => {
-      if (prev >= 0 && lines[prev]) {
-        gsap.to(lines[prev], { opacity: 0, duration: 0.18, ease: "power1.in" });
-      }
-      gsap.fromTo(
-        lines[active],
-        { opacity: 0 },
-        { opacity: 1, duration: 0.18, ease: "power2.out", delay: prev >= 0 ? 0.18 : 0 },
-      );
-    }, el);
-
-    return () => {
-      ctx.revert();
-    };
-  }, [active]);
-
   return (
-    <div className="democap" ref={wrap} aria-live="polite">
+    <div className="democap" aria-live="polite">
       <p className="t-label democap-sizer" aria-hidden="true">
         {longest}
       </p>
       {captions.map((c, i) => (
         <p
           key={c}
-          data-cap={i}
           className="t-label democap-line"
-          style={{ opacity: i === active ? 1 : 0 }}
+          data-on={i === active ? "true" : "false"}
+          aria-hidden={i === active ? undefined : true}
         >
           {c}
         </p>

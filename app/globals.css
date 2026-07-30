@@ -337,6 +337,10 @@ svg {
   max-width: 52ch;
 }
 
+.sec-link {
+  margin-top: 26px;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -550,6 +554,321 @@ svg {
   letter-spacing: -0.02em;
 }
 
+/* ── conversation ──────────────────────────────────────────────────── */
+
+.thread {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scrollbar-width: none;
+}
+.thread::-webkit-scrollbar {
+  display: none;
+}
+
+.bubblewrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 88%;
+}
+.bubblewrap.is-guest {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+.bubblewrap.is-orderly {
+  align-self: flex-start;
+}
+
+/* Every conversational line is Instrument Serif italic. This is what makes the
+   demo read as two people talking rather than as UI (§4.4, §8.4). */
+.bubble {
+  font-size: 14.5px;
+  line-height: 1.34;
+  padding: 9px 12px;
+  border-radius: var(--r-card);
+}
+.bubble.is-guest {
+  background: var(--surface);
+  color: var(--text);
+  border-bottom-right-radius: var(--r-pip);
+}
+.bubble.is-orderly {
+  background: var(--peach);
+  color: var(--text);
+  border-bottom-left-radius: var(--r-pip);
+}
+
+.bubble-dishes {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.typing {
+  display: inline-flex;
+  gap: 4px;
+  padding: 11px 13px;
+  border-radius: var(--r-card);
+  background: var(--peach);
+}
+.typing i {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--text-2);
+  animation: typing-bob 1s ease-in-out infinite;
+}
+.typing i:nth-child(2) {
+  animation-delay: 0.14s;
+}
+.typing i:nth-child(3) {
+  animation-delay: 0.28s;
+}
+
+@keyframes typing-bob {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+/* ── dish card inside the conversation ─────────────────────────────── */
+
+.dishcard {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-card);
+  padding: 10px 11px;
+  background: var(--surface-2);
+}
+
+.dishcard-flag {
+  margin-bottom: 6px;
+  font-size: 10px;
+}
+
+.dishcard-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dishcard-name {
+  font-size: 14.5px;
+  line-height: 1.2;
+}
+
+.dishcard-price {
+  font-weight: 700;
+  font-size: 12.5px;
+}
+
+.dishcard-note {
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.dishcard-foot {
+  margin-top: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.chip {
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: var(--r-pip);
+  background: var(--surface);
+  color: var(--text-2);
+}
+
+.dishcard-add {
+  font-weight: 600;
+  font-size: 12px;
+  padding: 5px 13px;
+  border-radius: var(--r-pill);
+  background: var(--text);
+  color: var(--surface-2);
+  transition: transform 150ms var(--ease-out);
+}
+.dishcard-add.is-pressed {
+  transform: scale(0.94);
+}
+
+/* ── voice ─────────────────────────────────────────────────────────── */
+
+.voiceblock {
+  display: grid;
+  gap: 10px;
+  padding: 14px 12px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-card);
+  background: var(--surface);
+}
+
+.voicebars {
+  display: block;
+  width: 100%;
+  --bar-color: var(--text);
+}
+
+.transcript {
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+/* ── upsell ────────────────────────────────────────────────────────── */
+
+.upsell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 11px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-card);
+  background: var(--peach);
+  animation: upsell-rise 320ms var(--ease-out) both;
+}
+
+.upsell-text {
+  font-size: 13.5px;
+  line-height: 1.3;
+}
+
+.upsell-add {
+  font-weight: 600;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: var(--r-pill);
+  background: var(--text);
+  color: var(--surface-2);
+  flex: 0 0 auto;
+}
+
+@keyframes upsell-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── pay sheet ─────────────────────────────────────────────────────── */
+
+.paysheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  transform: translateY(100%);
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  padding: 18px 14px 20px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--rule);
+  border-radius: var(--r-card) var(--r-card) 0 0;
+}
+
+.paysheet-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 11px 0;
+  border-radius: var(--r-pill);
+  background: var(--text);
+  color: var(--surface-2);
+}
+
+.paysheet-done {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding-block: 6px;
+}
+
+/* ── route stamp ───────────────────────────────────────────────────── */
+
+.routestamp {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 46%;
+  translate: -50% -50%;
+  padding: 8px 14px;
+  border: 1.5px solid var(--basil);
+  border-radius: var(--r-pip);
+  color: var(--basil);
+  background: var(--surface-2);
+  opacity: 0;
+}
+
+/* ── handoff input ─────────────────────────────────────────────────── */
+
+.chatinput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  border-top: 1px solid var(--rule);
+  background: var(--surface-2);
+}
+
+.chatinput-field {
+  flex: 1 1 auto;
+  min-width: 0;
+  font: inherit;
+  font-size: 13px;
+  padding: 8px 11px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.chatinput-field::placeholder {
+  color: var(--text-2);
+}
+
+.chatinput-send {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  border-radius: var(--r-pill);
+  background: var(--text);
+  color: var(--surface-2);
+  transition: transform 150ms var(--ease-out);
+}
+.chatinput-send:active {
+  transform: scale(0.94);
+}
+
 /* ── §6.3 caption ──────────────────────────────────────────────────── */
 
 /* Directly beneath the phone (§6.3). At 78px it read as a detached line at the
@@ -566,10 +885,25 @@ svg {
   color: var(--text-2);
 }
 
+/* 90ms out, then 90ms in. 180ms total, spent as a hand-off so two captions are
+   never legible together. */
 .democap-line {
   position: absolute;
   inset: 0;
   color: var(--text-2);
+  opacity: 0;
+  transition: opacity 90ms var(--ease-out);
+}
+
+.democap-line[data-on="true"] {
+  opacity: 1;
+  transition-delay: 90ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .democap-line {
+    transition: none;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════
