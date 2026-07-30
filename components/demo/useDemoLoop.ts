@@ -98,6 +98,17 @@ function reducer(state: DemoState, action: Action): DemoState {
     case "patch":
       return { ...state, ...action.patch };
     case "msg":
+      /* Ids are unique by construction, so a repeat means the same beat was
+         replayed. Replace in place rather than append: appending gave React two
+         children with the same key and it warns on every one. */
+      if (state.messages.some((m) => m.id === action.msg.id)) {
+        return {
+          ...state,
+          messages: state.messages.map((m) =>
+            m.id === action.msg.id ? action.msg : m,
+          ),
+        };
+      }
       return { ...state, messages: [...state.messages, action.msg] };
     case "patchLastMsg": {
       if (!state.messages.length) return state;
@@ -293,13 +304,26 @@ export function useDemoLoop(active: boolean) {
           end: "bottom bottom",
           onUpdate: (self) => {
             if (stopped.current) return;
-            /* First pass only. Once the loop has run once it owns the playhead:
-               seeking across a repeat boundary re-fired beats against state the
-               reset had already cleared, which is how SENT TO TOAST ended up on
-               screen beside a conversation that was starting over. */
-            if (t.totalTime() >= t.duration()) return;
             const target = self.progress * t.duration();
-            if (t.time() < target) t.time(target);
+            const now = t.time();
+            if (Math.abs(target - now) < 0.05) return;
+
+            /* Scrolling BACK walks the demo back. The state is accumulated by a
+               reducer, so seeking the playhead backwards on its own would leave
+               messages and cart items that the earlier beats never added: it has
+               to be rebuilt. Reset to empty, drop the playhead to zero, then
+               seek forward to the target, which replays every beat callback in
+               order and lands on a state that is exactly what that scroll
+               position means. Rebuilding rather than rewinding is also what
+               stops a seek across the loop's repeat boundary corrupting it. */
+            if (target < now) {
+              dispatch({ type: "reset" });
+              // suppressEvents, or GSAP fires every callback between here and
+              // zero in REVERSE on the way down and each message gets
+              // dispatched a second time, which React sees as duplicate keys.
+              t.time(0, true);
+            }
+            t.time(target);
           },
         })
       : null;

@@ -1357,7 +1357,9 @@ svg {
   /* Same offset the demo's own two columns use, so the ticket's top edge lines
      up with the copy block rather than floating above it. */
   top: clamp(96px, 13vh, 132px);
-  height: calc(100svh - 150px);
+  /* Sized so the full sheet reaches the bottom of the screen from where it
+     sticks, with a small breath under it. */
+  height: calc(100svh - clamp(96px, 13vh, 132px) - 40px);
   pointer-events: none;
 }
 
@@ -1382,12 +1384,16 @@ svg {
   overflow: hidden;
 }
 
-/* Inside the sticky column the paper is taken out of flow entirely, so its
-   growth can never reflow anything. */
+/* Inside the sticky column the paper is taken out of flow entirely, so it can
+   never reflow anything. It is a FULL SHEET the height of the screen, at the
+   client's direction: the strip should occupy this screen rather than be a
+   short label at the top of it. The lines land on the sheet; the sheet does not
+   grow to meet them. */
 .spine-sticky > .spine-paper {
   position: absolute;
   top: 0;
   left: 0;
+  height: 100%;
 }
 
 /* Perforations down both edges, as notches in the page colour. */

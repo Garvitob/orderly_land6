@@ -50,49 +50,29 @@ export function TicketSpine() {
     }
 
     const ctx = gsap.context(() => {
-      /* The paper feeds to exactly what has printed, and never further.
-         It used to grow on its own scrub across the whole of Act III,
-         independent of the lines, so for most of the page the strip was a tall
-         empty white rectangle with two or three lines at the top. That is what
-         made the signature element read as broken. A printer does not feed
-         blank paper ahead of the print head, and now neither does this. */
-      const BOTTOM_PAD = 12;
-      const feedTo = (line: HTMLElement) =>
-        gsap.to(paperEl, {
-          height: line.offsetTop + line.offsetHeight + BOTTOM_PAD,
-          duration: 0.5,
-          ease: "shift",
-          overwrite: "auto",
-        });
-
-      // Nothing printed yet: just the perforated lead-in.
+      // Nothing printed yet. The sheet itself is already the full height of the
+      // screen (see globals.css) and the lines land ON it.
       gsap.set(lines, { opacity: 0, y: -4 });
-      gsap.set(paperEl, { height: 26 });
 
       /* Printed against the DEMO's beat, not against page sections, so the line
-         and the thing it records land together. Forward only: a beat that has
-         already printed never un-prints, which is what keeps it a ticket rather
-         than a scrubbable timeline. */
-      let printed = -1;
+         and the thing it records land together. Both directions: scrolling back
+         up un-prints, because this is a scrubbed sequence the reader is driving,
+         not a §10.2 reveal that must never re-fire. */
       unsubscribe = onDemoBeat((beat) => {
-        if (beat <= printed) return;
-        let last: HTMLElement | null = null;
         lines.forEach((line) => {
           const at = Number(line.dataset.beat);
-          if (Number.isNaN(at) || at > beat) return;
-          if (Number(gsap.getProperty(line, "opacity")) < 1) {
-            gsap.to(line, {
-              opacity: 1,
-              y: 0,
-              duration: 0.34,
-              ease: "shift",
-              overwrite: "auto",
-            });
-          }
-          last = line;
+          if (Number.isNaN(at)) return;
+          const shouldShow = at <= beat;
+          const isShown = Number(gsap.getProperty(line, "opacity")) > 0.5;
+          if (shouldShow === isShown) return;
+          gsap.to(line, {
+            opacity: shouldShow ? 1 : 0,
+            y: shouldShow ? 0 : -4,
+            duration: shouldShow ? 0.34 : 0.2,
+            ease: "shift",
+            overwrite: "auto",
+          });
         });
-        if (last) feedTo(last);
-        printed = beat;
       });
     }, colEl);
 
