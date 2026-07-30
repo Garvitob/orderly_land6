@@ -20,7 +20,7 @@ export function TicketSpine() {
       <div className="spine-sticky">
         {/* scaleY 0 at rest; the turn feeds it in from the top like paper
             leaving a printer. transform-origin is top. */}
-        <div className="spine-paper" data-spine-paper>
+        <div className="spine-paper paper-scope" data-spine-paper>
           <div className="spine-perf" />
           <div className="spine-lines">
             <Label tone="text-2" className="spine-line" data-spine-line="0">

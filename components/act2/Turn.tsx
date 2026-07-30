@@ -39,7 +39,7 @@ export function Turn() {
       <div className="turn-spine-layer" aria-hidden="true">
         <div className="act3-grid">
           <div className="spine-col">
-            <div className="spine-paper" data-turn-spine>
+            <div className="spine-paper paper-scope" data-turn-spine>
               <div className="spine-perf" />
               <div className="spine-lines">
                 <p className="t-label spine-line">

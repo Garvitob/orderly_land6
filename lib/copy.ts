@@ -34,6 +34,30 @@ export const COPY = {
     titleCard: "Scan, speak, done.",
   },
 
+  /** §8.4. The Label asserts the category, which the headline-only test
+   *  otherwise never states. Approved swap from HOW IT WORKS FOR A GUEST. */
+  guest: {
+    label: "The conversational ordering layer",
+    headline: "A conversation, not a form.",
+    subhead:
+      "Your guest scans the code on the table and talks. Orderly answers questions, handles what they cannot eat, and takes payment. You get a clean ticket.",
+    venue: "Saffron House",
+    table: "Table 12",
+  },
+
+  /** §6.3. Not optional. The caption changes on every beat, so someone who
+   *  reads nothing else still understands the business by the end of a loop. */
+  captions: {
+    menu: "Your guest scans the QR. No app, no sign up",
+    conversation1: "They ask a question. Orderly answers like a host would",
+    conversation2: "It handles preferences and dietary needs",
+    voice: "Or they just say it out loud",
+    upsell: "It suggests one thing they will actually want",
+    pay: "They pay in the same conversation",
+    route: "The order lands in the POS you already run",
+    handoff: "Live demo. Type anything",
+  },
+
   nav: {
     links: [
       { label: "How it works", href: "#guest" },

@@ -1,6 +1,7 @@
 import { Nav } from "@/components/chrome/Nav";
 import { Room } from "@/components/act1/Room";
 import { TicketSpine, TicketSpineMobile } from "@/components/act2/TicketSpine";
+import { Guest } from "@/components/sections/Guest";
 
 /** Composition only, zero logic (§13). */
 export default function Page() {
@@ -17,12 +18,13 @@ export default function Page() {
           <div className="act3-grid">
             <TicketSpine />
             <div className="act3-content">
-              {/* Sections land at step 8 onward. */}
-              <section id="guest" className="sec">
+              <Guest />
+              {/* §8.5 onward land at step 12. */}
+              <section className="sec">
                 <p className="t-label" style={{ color: "var(--text-2)" }}>
-                  Act III sections land at step 8
+                  §8.5 onward land at step 12
                 </p>
-                <div style={{ height: "150vh" }} />
+                <div style={{ height: "120vh" }} />
               </section>
             </div>
           </div>
