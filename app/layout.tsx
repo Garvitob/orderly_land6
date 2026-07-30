@@ -3,6 +3,7 @@ import { Hanken_Grotesk, Instrument_Serif } from "next/font/google";
 import { THEME_SCRIPT } from "@/lib/useTheme";
 import { SmoothScroll } from "@/components/chrome/SmoothScroll";
 import { Grain } from "@/components/chrome/Grain";
+import { InlineScript } from "@/components/chrome/InlineScript";
 import "./globals.css";
 
 /* Two voices, one system (§4.4). Both self-hosted by next/font, so no
@@ -52,7 +53,7 @@ export default function RootLayout({
       <head>
         {/* Runs during HTML parsing, before first paint. This is what makes
             the theme swap flash-free on reload (§4.3). */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <InlineScript html={THEME_SCRIPT} />
       </head>
       <body>
         {children}

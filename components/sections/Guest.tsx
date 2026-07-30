@@ -6,6 +6,7 @@ import { prefersReducedMotion } from "@/lib/useReducedMotion";
 import { useInView } from "@/lib/useInView";
 import { COPY } from "@/lib/copy";
 import { money } from "@/lib/menu";
+import { respond, echoOf, thinkingDelay } from "@/lib/demo-brain";
 import { Label } from "@/components/primitives/Label";
 import { TextLink } from "@/components/primitives/Button";
 import { Phone } from "@/components/demo/Phone";
@@ -40,6 +41,16 @@ export function Guest() {
   const root = useRef<HTMLElement | null>(null);
   const phone = useRef<HTMLDivElement | null>(null);
   const inView = useInView(phone);
+  /** Stable ids without Date.now() in render (§14.1). */
+  const seq = useRef(0);
+  const thinking = useRef<number | null>(null);
+
+  useEffect(
+    () => () => {
+      if (thinking.current) window.clearTimeout(thinking.current);
+    },
+    [],
+  );
 
   const { state, dispatch, total, takeOver } = useDemoLoop(inView);
 
@@ -74,13 +85,41 @@ export function Guest() {
     };
   }, []);
 
-  // Step 9 appends the guest line only. The brain's reply lands at step 10.
+  /**
+   * §8.4's handoff. The reply renders through the SAME components the auto-loop
+   * used, so there is no second code path. The thinking delay is randomised in
+   * the 400 to 700ms band and only ever runs in this handler, never during
+   * render (§14.1).
+   */
   const handleSend = (text: string) => {
     takeOver();
+
+    // `live-` prefix on purpose: the scripted loop already owns g1/o1/g2/o2/g3,
+    // and a bare counter collided with `o1` and produced duplicate React keys.
+    const n = seq.current++;
     dispatch({
       type: "msg",
-      msg: { id: `u${Date.now()}`, from: "guest", text },
+      msg: { id: `live-g${n}`, from: "guest", text: echoOf(text) },
     });
+    dispatch({ type: "patch", patch: { typing: true } });
+
+    const reply = respond(text);
+    const delay = thinkingDelay();
+
+    if (thinking.current) window.clearTimeout(thinking.current);
+    thinking.current = window.setTimeout(() => {
+      dispatch({ type: "patch", patch: { typing: false } });
+      dispatch({
+        type: "msg",
+        msg: {
+          id: `live-o${n}`,
+          from: "orderly",
+          text: reply.text,
+          dishes: reply.dishes,
+          chip: reply.chip,
+        },
+      });
+    }, delay);
   };
 
   return (
