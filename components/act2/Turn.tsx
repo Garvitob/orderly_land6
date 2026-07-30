@@ -1,6 +1,10 @@
 "use client";
 
 import { COPY } from "@/lib/copy";
+import { TICKET } from "@/lib/ticket";
+
+/** Every line but the head is present for geometry only, never painted. */
+const HIDDEN = { opacity: 0 } as const;
 
 /**
  * §8.3 THE TURN. The most important 20% of scroll on the page.
@@ -32,20 +36,37 @@ export function Turn() {
 
       <div className="turn-paper" data-turn-paper aria-hidden="true" />
 
-      {/* The printer starts. This stub reuses Act III's own grid classes, so it
+      {/* The printer starts. This stub reuses Act III's own grid classes so it
           lands at exactly the x of the real spine with no positioning maths to
-          drift. Same width, same paper colour, same first line, so when the pin
-          releases and Act III's spine takes over the cut is invisible. */}
+          drift, and it renders the WHOLE ticket with only the head line visible.
+          That last part matters: the real sheet distributes its lines down the
+          full height, so a stub holding one line put its "Table 12" at a
+          different y and the wipe showed two of them, offset, mid transition.
+          Identical markup means identical geometry, and the cut is invisible. */}
       <div className="turn-spine-layer" aria-hidden="true">
         <div className="act3-grid">
           <div className="spine-col">
             <div className="spine-paper paper-scope" data-turn-spine>
               <div className="spine-perf" />
               <div className="spine-lines">
-                <p className="t-label spine-line">
-                  <span>Table 12</span>
-                  <span>7:42</span>
-                </p>
+                <p className="spine-dots">· · · · · ·</p>
+
+                {TICKET.map((l) =>
+                  l.kind === "rule" ? (
+                    <span key={l.id} className="spine-hr" style={HIDDEN} />
+                  ) : (
+                    <p
+                      key={l.id}
+                      className={`t-label spine-line is-${l.kind ?? "row"}`}
+                      style={l.id === "head" ? undefined : HIDDEN}
+                    >
+                      <span>{l.left}</span>
+                      {l.right ? <span>{l.right}</span> : null}
+                    </p>
+                  ),
+                )}
+
+                <p className="spine-dots">· · · · · ·</p>
               </div>
             </div>
           </div>

@@ -192,11 +192,17 @@ export function Room() {
         // 4. the printer starts. Feeds from the top, power2.out over the
         //    equivalent of 600ms at this scrub rate.
         if (turnSpine) {
+          /* Revealed from the top rather than scaled from it. §8.3 says
+             scaleY 0 to 1, but scaling squashes the type on the sheet, so the
+             stub's "Table 12" sat at a different height than the real spine's
+             for the whole feed and the wipe showed two of them at once. A clip
+             reveals the sheet without distorting what is printed on it, which
+             is also what a printer actually does. */
           tl.fromTo(
             turnSpine,
-            { scaleY: 0 },
+            { clipPath: "inset(0% 0% 100% 0%)" },
             {
-              scaleY: 1,
+              clipPath: "inset(0% 0% 0% 0%)",
               duration: 0.1,
               ease: "power2.out",
               immediateRender: false,

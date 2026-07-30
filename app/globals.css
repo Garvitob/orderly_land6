@@ -1569,16 +1569,16 @@ svg {
 /* Match the real spine's sticky offset so the stub does not sit under the nav,
    and give it enough height to read as paper leaving a printer rather than a
    single label appearing. */
+/* Exactly the real spine's sticky offset and sheet height. Any difference here
+   shows as a second, misaligned "Table 12" for the length of the wipe, because
+   both sheets are on screen at once while the room is being clipped away. */
 .turn-spine-layer .spine-col {
-  padding-top: 96px;
+  padding-top: clamp(96px, 13vh, 132px);
 }
 
-/* No min-height. 190px of paper behind one printed line is a blank white
-   rectangle, which is what made the strip read as broken at the very moment it
-   is introduced. The stub is exactly its one line, and the real spine picks up
-   at that same height and feeds from there as each section prints. */
 .turn-spine-layer .spine-paper {
-  transform: scaleY(0);
+  height: calc(100svh - clamp(96px, 13vh, 132px) - 40px);
+  clip-path: inset(0% 0% 100% 0%);
 }
 
 /* Â§8.2 scroll cue. Bottom centre. */
