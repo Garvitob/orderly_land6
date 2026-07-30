@@ -106,6 +106,13 @@ export function Room() {
             anticipatePin: 1,
             scrub: true,
             invalidateOnRefresh: true,
+            /* Act III is pulled up over the room's trailing pin space (see
+               globals.css), so the room has to get out of the way the moment
+               the pin lets go or it would cover the demo with the blank paper
+               it ended the turn on. Reversible: scrolling back up restores it
+               before the turn plays backwards. */
+            onLeave: () => gsap.set(rootEl, { autoAlpha: 0 }),
+            onEnterBack: () => gsap.set(rootEl, { autoAlpha: 1 }),
             // §8.1: the nav lands at the turn. Driven off progress rather
             // than a separate trigger so it can never disagree with the
             // paper wipe. The attribute lives on <html> so Nav does not

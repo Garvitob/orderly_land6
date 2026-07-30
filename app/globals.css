@@ -156,7 +156,13 @@ body {
   line-height: 1.625;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  /* `clip`, never `hidden`. overflow-x: hidden computes overflow-y to auto,
+     which makes <body> a scroll container, and a sticky descendant then sticks
+     against BODY's scrollport instead of the viewport. That is what stopped the
+     ticket spine sticking: it scrolled straight off the top and was never seen
+     again for the length of Act III. `clip` prevents the same horizontal
+     scrolling without creating the scroll container. */
+  overflow-x: clip;
 }
 
 /* Focus ring is --text, never orange (Â§4.2 forbids orange focus rings) */
@@ -1095,6 +1101,27 @@ svg {
   align-items: center;
   background: var(--act1-bg);
   overflow: hidden;
+}
+
+/* §8.3: "the pin releases with no jump and no dead scroll."
+   ScrollTrigger's pin spacer holds `end - start` of scroll AND the element's
+   own height, so once the pin let go the room still occupied a full viewport
+   of document. Its end state is the completed turn, which is a blank sheet of
+   Act III paper, so the reader crossed 100svh of nothing between the title
+   card and the demo. Act III is pulled up over that trailing space and Room
+   hides itself on leave (see Room.tsx) so the demo is what shows through.
+   The query mirrors EXACTLY the condition under which Room creates the pin:
+   min-width 1024 for the matchMedia branch, and no-preference because the
+   reduced-motion path returns before any pin exists. Reclaiming space that was
+   never taken would drag Act III up over a room that is still in flow. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .room {
+    z-index: 2;
+  }
+  .act3 {
+    margin-top: -100svh;
+    z-index: 1;
+  }
 }
 
 /* scale(1.02) at rest so the scrubbed push never reveals an edge (Â§8.2). */
