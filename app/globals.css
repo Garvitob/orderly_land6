@@ -391,6 +391,58 @@ svg {
   padding-top: clamp(8px, 3vw, 40px);
 }
 
+/* The eight beats of §6.3, stated at once. The live one is Ink, the ones
+   already played hold at Stone, the ones ahead sit back. No orange: this
+   section already spends its accent inside the phone, on MOST ORDERED. */
+.guest-flow {
+  margin: clamp(20px, 3vh, 34px) 0 0;
+  padding: 0;
+  list-style: none;
+  max-width: 34rem;
+}
+
+.guest-flow li {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 12px;
+  align-items: baseline;
+  padding: 9px 0;
+  color: var(--text-2);
+  opacity: 0.45;
+  transition:
+    opacity 220ms var(--ease-out),
+    color 220ms var(--ease-out),
+    transform 220ms var(--ease-out);
+}
+
+.guest-flow li + li {
+  border-top: 1px solid var(--rule);
+}
+
+/* Already played: legible, but clearly behind the playhead. */
+.guest-flow li.is-done {
+  opacity: 0.75;
+}
+
+.guest-flow li.is-live {
+  color: var(--text);
+  opacity: 1;
+  transform: translateX(5px);
+}
+
+.guest-flow-n {
+  color: var(--text-2);
+}
+
+.guest-flow li.is-live .guest-flow-n {
+  color: var(--text);
+}
+
+.guest-flow-t {
+  letter-spacing: 0.08em;
+  line-height: 1.45;
+}
+
 .guest-phone {
   position: relative;
   display: grid;
@@ -1124,6 +1176,19 @@ svg {
   }
 }
 
+/* ScrollTrigger copies the pinned element's z-index onto the pin-spacer it
+   wraps around it, so that spacer sat at z-index 2 over the top 900px of Act
+   III and swallowed every click meant for the demo, including its "type
+   anything" input. The spacer only exists to hold scroll space, so it takes no
+   pointer events; the room inside it still takes its own. */
+.pin-spacer {
+  pointer-events: none;
+}
+
+.pin-spacer > * {
+  pointer-events: auto;
+}
+
 /* scale(1.02) at rest so the scrubbed push never reveals an edge (Â§8.2). */
 .room-media {
   position: absolute;
@@ -1444,9 +1509,12 @@ svg {
   padding-top: 96px;
 }
 
+/* No min-height. 190px of paper behind one printed line is a blank white
+   rectangle, which is what made the strip read as broken at the very moment it
+   is introduced. The stub is exactly its one line, and the real spine picks up
+   at that same height and feeds from there as each section prints. */
 .turn-spine-layer .spine-paper {
   transform: scaleY(0);
-  min-height: 190px;
 }
 
 /* Â§8.2 scroll cue. Bottom centre. */

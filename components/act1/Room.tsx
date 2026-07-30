@@ -170,19 +170,24 @@ export function Room() {
           tl.to(card, { opacity: 0, duration: 0.04 }, 0.9);
         }
 
-        // 3. the paper wipes UP from the bottom edge. A wipe, not a fade.
-        if (paper) {
-          tl.fromTo(
-            paper,
-            { clipPath: "inset(100% 0 0 0)" },
-            {
-              clipPath: "inset(0% 0 0 0)",
-              duration: 0.12,
-              immediateRender: false,
-            },
-            0.88,
-          );
-        }
+        /* 3. the wipe. The room is clipped away from its bottom edge upward,
+           which UNCOVERS Act III sitting directly beneath it. It used to paint
+           an opaque Oat plate over the room instead, so the wipe finished on a
+           blank sheet and the reader crossed a dead frame before the demo
+           arrived. Same wipe to look at; what it reveals is now real content.
+           The dark plate, the title card and the spine stub all live inside the
+           room, so the clip sweeps them away together, which is exactly the
+           "paper sweeps the card away" read §8.3 asks for. */
+        tl.fromTo(
+          rootEl,
+          { clipPath: "inset(0% 0% 0% 0%)" },
+          {
+            clipPath: "inset(0% 0% 100% 0%)",
+            duration: 0.12,
+            immediateRender: false,
+          },
+          0.88,
+        );
 
         // 4. the printer starts. Feeds from the top, power2.out over the
         //    equivalent of 600ms at this scrub rate.

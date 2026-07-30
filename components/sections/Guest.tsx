@@ -130,6 +130,29 @@ export function Guest() {
         <h2 className="t-headline sec-head">{COPY.guest.headline}</h2>
         <p className="t-body sec-sub">{COPY.guest.subhead}</p>
 
+        {/* The eight beats, readable at a glance. The caption under the phone
+            only ever shows the beat you happen to be on, so someone arriving
+            mid-loop saw one line of an eight step story and had to wait 22
+            seconds for the rest. The whole flow is stated here in the same
+            verbatim §6.3 words, with the live beat lit, which is also what
+            fills this column instead of leaving it empty. */}
+        <ol className="guest-flow" aria-label="What the guest does">
+          {CAPTIONS.map((c, i) => (
+            <li
+              key={c}
+              className={
+                i === state.beat ? "is-live" : i < state.beat ? "is-done" : ""
+              }
+              aria-current={i === state.beat ? "step" : undefined}
+            >
+              <span className="t-label guest-flow-n tnum">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span className="t-label guest-flow-t">{c}</span>
+            </li>
+          ))}
+        </ol>
+
         {/* §6.5: one text link or one button, never both. The phone is the
             proof, so this is the link, and it points at where the order goes,
             which is the next question an operator asks. */}

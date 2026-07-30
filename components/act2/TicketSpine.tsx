@@ -32,7 +32,6 @@ export function TicketSpine() {
     const paperEl = paper.current;
     if (!colEl || !paperEl) return;
 
-    const act3 = document.querySelector<HTMLElement>(".act3");
     const lines = paperEl.querySelectorAll<HTMLElement>("[data-line-id]");
     const reduced = prefersReducedMotion();
 
@@ -44,7 +43,26 @@ export function TicketSpine() {
     }
 
     const ctx = gsap.context(() => {
-      // Each line prints when its own section arrives. once:true, always.
+      /* The paper feeds to exactly what has printed, and never further.
+         It used to grow on its own scrub across the whole of Act III,
+         independent of the lines, so for most of the page the strip was a tall
+         empty white rectangle with two or three lines at the top. That is what
+         made the signature element read as broken. A printer does not feed
+         blank paper ahead of the print head, and now neither does this. */
+      const BOTTOM_PAD = 12;
+      const feedTo = (line: HTMLElement) =>
+        gsap.to(paperEl, {
+          height: line.offsetTop + line.offsetHeight + BOTTOM_PAD,
+          duration: 0.5,
+          ease: "shift",
+          overwrite: "auto",
+        });
+
+      // Nothing printed yet: just the perforated lead-in.
+      gsap.set(paperEl, { height: 26 });
+
+      // Each line prints when its own section arrives. once:true, always, and
+      // the paper feeds by exactly that line's height as it does.
       lines.forEach((line) => {
         const at = line.dataset.at;
         if (!at) return;
@@ -60,31 +78,15 @@ export function TicketSpine() {
             duration: 0.34,
             ease: "shift",
             immediateRender: false,
-            scrollTrigger: { trigger: section, start: "top 62%", once: true },
-          },
-        );
-      });
-
-      // Growth: the paper feeds out as Act III scrolls. Measured from the
-      // content so it always ends exactly at its natural height.
-      if (act3) {
-        const full = () => paperEl.scrollHeight;
-        gsap.fromTo(
-          paperEl,
-          { height: 96 },
-          {
-            height: full,
-            ease: "none",
             scrollTrigger: {
-              trigger: act3,
-              start: "top 70%",
-              end: "bottom bottom",
-              scrub: true,
-              invalidateOnRefresh: true,
+              trigger: section,
+              start: "top 62%",
+              once: true,
+              onEnter: () => feedTo(line),
             },
           },
         );
-      }
+      });
     }, colEl);
 
     return () => {
