@@ -65,7 +65,7 @@ export function Next() {
             <Label tone="text-2">points</Label>
             <div className="rewards-favs">
               <Label tone="text-2">Favorites</Label>
-              <p className="t-serif">Saffron House</p>
+              <p className="t-serif">Copper Skillet</p>
               <p className="t-serif">Orange Square</p>
             </div>
           </div>

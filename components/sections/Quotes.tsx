@@ -60,6 +60,7 @@ export function Quotes() {
         gsap.set(blocks[0], { opacity: 1, y: 0 });
 
         const tl = gsap.timeline({
+          immediateRender: false,
           scrollTrigger: {
             trigger: rootEl,
             start: "top top",
@@ -97,6 +98,7 @@ export function Quotes() {
               y: 0,
               duration: 0.8,
               ease: "shift",
+              immediateRender: false,
               scrollTrigger: { trigger: b, start: "top 82%", once: true },
             },
           );

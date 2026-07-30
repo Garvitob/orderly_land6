@@ -25,7 +25,7 @@ const CAPTIONS = [
   COPY.captions.handoff,
 ] as const;
 
-const UPSELL_TEXT = "Garlic naan with that? It goes with the butter chicken.";
+const UPSELL_TEXT = "Garlic fries with that? They go with the smash burger.";
 
 /**
  * §8.4 THE GUEST. Answers: show me. What does my guest actually do?
@@ -75,6 +75,7 @@ export function Guest() {
           opacity: 1,
           duration: 0.95,
           ease: "shift",
+          immediateRender: false,
           scrollTrigger: { trigger: rootEl, start: "top 78%", once: true },
         },
       );

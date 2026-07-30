@@ -1,55 +1,59 @@
 import type { Dish } from "./types";
 
-/** §8.4, verbatim. Do not invent prices beyond this list (§12). */
+/**
+ * An American menu. Prices are held exactly where §8.4 fixes them so the
+ * demo's headline arithmetic is unchanged:
+ *   12.95 + 11.50 + 4.50 + 3.50 = 32.45
+ */
 export const MENU: readonly Dish[] = [
   {
-    id: "butter-chicken",
-    name: "Butter Chicken",
+    id: "smash-burger",
+    name: "Smash Burger",
     price: 12.95,
     tags: ["bestseller", "rich"],
-    note: "slow cooked, mild heat",
+    note: "double patty, house sauce",
   },
   {
-    id: "rogan-josh",
-    name: "Lamb Rogan Josh",
+    id: "nashville-hot",
+    name: "Nashville Hot Chicken",
     price: 14.95,
     tags: ["bestseller", "spicy"],
-    note: "Kashmiri chillies",
+    note: "cayenne butter, pickles",
   },
   {
-    id: "malai-kofta",
-    name: "Malai Kofta",
+    id: "mac-and-cheese",
+    name: "Mac and Cheese",
     price: 11.5,
     tags: ["mild", "vegetarian"],
-    note: "cashew cream, no heat",
+    note: "three cheeses, no heat",
   },
   {
-    id: "paneer-tikka",
-    name: "Paneer Tikka",
+    id: "farm-salad",
+    name: "Farm Salad",
     price: 10.95,
     tags: ["vegetarian", "glutenfree"],
-    note: "charred, off the tandoor",
+    note: "market greens, no croutons",
   },
   {
-    id: "dal-makhani",
-    name: "Dal Makhani",
+    id: "skillet-cornbread",
+    name: "Skillet Cornbread",
     price: 9.5,
     tags: ["vegetarian", "mild"],
-    note: "black lentils, overnight",
+    note: "honey butter, cast iron",
   },
   {
-    id: "garlic-naan",
-    name: "Garlic Naan",
+    id: "garlic-fries",
+    name: "Garlic Fries",
     price: 3.5,
     tags: ["side"],
-    note: "blistered, brushed with ghee",
+    note: "hand cut, parsley and salt",
   },
   {
-    id: "mango-lassi",
-    name: "Mango Lassi",
+    id: "vanilla-shake",
+    name: "Vanilla Shake",
     price: 4.5,
     tags: ["drink"],
-    note: "thick, house made",
+    note: "thick, real vanilla",
   },
   {
     id: "coke",
@@ -59,11 +63,11 @@ export const MENU: readonly Dish[] = [
     note: "chilled can",
   },
   {
-    id: "gulab-jamun",
-    name: "Gulab Jamun",
+    id: "apple-pie",
+    name: "Apple Pie",
     price: 5.5,
     tags: ["dessert"],
-    note: "warm, in syrup",
+    note: "warm, cinnamon crust",
   },
 ] as const;
 
@@ -71,13 +75,12 @@ export function dish(id: string): Dish | undefined {
   return MENU.find((d) => d.id === id);
 }
 
-/** §8.4's arithmetic, asserted in code as the brief requires.
- *  12.95 + 11.50 + 4.50 + 3.50 = 32.45 */
+/** §8.4's cart, in the order the demo adds it. */
 export const CART_SEQUENCE = [
-  "butter-chicken",
-  "malai-kofta",
-  "mango-lassi",
-  "garlic-naan",
+  "smash-burger",
+  "mac-and-cheese",
+  "vanilla-shake",
+  "garlic-fries",
 ] as const;
 
 export const CART_TOTAL = CART_SEQUENCE.reduce((sum, id) => {

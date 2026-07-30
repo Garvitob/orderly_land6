@@ -39,28 +39,28 @@ const INITIAL: DemoState = {
   handoff: false,
 };
 
-const VOICE_LINE = "and a mango lassi";
+const VOICE_LINE = "and a vanilla shake";
 
 /** The scripted conversation, shared by the loop and by the reduced-motion
  *  completed state so there is only one source of truth for what was said. */
 function scriptMessages(): Msg[] {
-  const bc = dish("butter-chicken");
-  const rj = dish("rogan-josh");
-  const mk = dish("malai-kofta");
+  const bc = dish("smash-burger");
+  const rj = dish("nashville-hot");
+  const mk = dish("mac-and-cheese");
   return [
     { id: "g1", from: "guest", text: "what are your best sellers?" },
     {
       id: "o1",
       from: "orderly",
-      text: "Butter chicken goes out more than anything else on the menu. The rogan josh if you want heat.",
+      text: "The smash burger goes out more than anything else on the menu. The Nashville hot if you want heat.",
       dishes: [bc, rj].filter((d): d is NonNullable<typeof d> => Boolean(d)),
-      flags: { "butter-chicken": "Most ordered" },
+      flags: { "smash-burger": "Most ordered" },
     },
     { id: "g2", from: "guest", text: "something mildly spiced for my mom" },
     {
       id: "o2",
       from: "orderly",
-      text: "Malai kofta has no heat at all. Cashew cream, very gentle.",
+      text: "The mac and cheese has no heat at all. Three cheeses, very gentle.",
       dishes: mk ? [mk] : [],
       chip: "Mild",
     },
@@ -74,7 +74,7 @@ const FINISHED: DemoState = {
   beat: 7,
   mode: "chat",
   messages: [],
-  cart: ["butter-chicken", "malai-kofta", "mango-lassi", "garlic-naan"],
+  cart: ["smash-burger", "mac-and-cheese", "vanilla-shake", "garlic-fries"],
   tapped: null,
   typing: false,
   transcript: "",
@@ -121,10 +121,10 @@ function reducer(state: DemoState, action: Action): DemoState {
 }
 
 export const CART_IDS = [
-  "butter-chicken",
-  "malai-kofta",
-  "mango-lassi",
-  "garlic-naan",
+  "smash-burger",
+  "mac-and-cheese",
+  "vanilla-shake",
+  "garlic-fries",
 ] as const;
 
 /**
@@ -162,10 +162,10 @@ export function useDemoLoop(active: boolean) {
     });
 
     /* ── MENU · 2.5s ─────────────────────────────────────────────── */
-    t.call(p({ tapped: "butter-chicken" }), undefined, 0.9);
+    t.call(p({ tapped: "smash-burger" }), undefined, 0.9);
     t.call(() => {
       dispatch({ type: "patch", patch: { tapped: null } });
-      dispatch({ type: "add", id: "butter-chicken" });
+      dispatch({ type: "add", id: "smash-burger" });
     }, undefined, 1.2);
 
     /* ── CONVERSATION · 9s ───────────────────────────────────────── */
@@ -179,16 +179,16 @@ export function useDemoLoop(active: boolean) {
     t.call(p({ typing: true }), undefined, 3.3);
     t.call(() => {
       dispatch({ type: "patch", patch: { typing: false } });
-      const bc = dish("butter-chicken");
-      const rj = dish("rogan-josh");
+      const bc = dish("smash-burger");
+      const rj = dish("nashville-hot");
       dispatch({
         type: "msg",
         msg: {
           id: "o1",
           from: "orderly",
-          text: "Butter chicken goes out more than anything else on the menu. The rogan josh if you want heat.",
+          text: "The smash burger goes out more than anything else on the menu. The Nashville hot if you want heat.",
           dishes: [bc, rj].filter((d): d is NonNullable<typeof d> => Boolean(d)),
-          flags: { "butter-chicken": "Most ordered" },
+          flags: { "smash-burger": "Most ordered" },
         },
       });
     }, undefined, 3.9);
@@ -207,16 +207,16 @@ export function useDemoLoop(active: boolean) {
     t.call(p({ typing: true }), undefined, 6.9);
     t.call(() => {
       dispatch({ type: "patch", patch: { typing: false } });
-      const mk = dish("malai-kofta");
+      const mk = dish("mac-and-cheese");
       dispatch({
         type: "msg",
         msg: {
           id: "o2",
           from: "orderly",
-          text: "Malai kofta has no heat at all. Cashew cream, very gentle.",
+          text: "The mac and cheese has no heat at all. Three cheeses, very gentle.",
           dishes: mk ? [mk] : [],
           chip: "Mild",
-          addOn: "malai-kofta",
+          addOn: "mac-and-cheese",
         },
       });
     }, undefined, 7.5);
@@ -225,7 +225,7 @@ export function useDemoLoop(active: boolean) {
     t.call(() => dispatch({ type: "patchLastMsg", patch: { addPressed: true } }), undefined, 9.3);
     t.call(() => {
       dispatch({ type: "patchLastMsg", patch: { addPressed: false } });
-      dispatch({ type: "add", id: "malai-kofta" });
+      dispatch({ type: "add", id: "mac-and-cheese" });
     }, undefined, 9.6);
 
     /* ── VOICE · 4s ──────────────────────────────────────────────── */
@@ -257,14 +257,14 @@ export function useDemoLoop(active: boolean) {
         msg: { id: "g3", from: "guest", text: line },
       });
       dispatch({ type: "patch", patch: { voiceLive: false, transcript: "" } });
-      dispatch({ type: "add", id: "mango-lassi" });
+      dispatch({ type: "add", id: "vanilla-shake" });
     }, undefined, 14.2);
 
     /* ── UPSELL · 2s ─────────────────────────────────────────────── */
     t.call(p({ beat: 4, mode: "chat", upsellVisible: true }), undefined, 15.2);
     t.call(() => {
       dispatch({ type: "patch", patch: { upsellVisible: false } });
-      dispatch({ type: "add", id: "garlic-naan" });
+      dispatch({ type: "add", id: "garlic-fries" });
     }, undefined, 16.6);
 
     /* ── PAY · 2s ────────────────────────────────────────────────── */

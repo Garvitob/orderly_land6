@@ -70,6 +70,7 @@ export function Journey() {
 
         if (!reduced) {
           const tl1 = gsap.timeline({
+            immediateRender: false,
             scrollTrigger: {
               trigger: rootEl.querySelector("[data-node='guest']"),
               start: "top 72%",
@@ -110,6 +111,7 @@ export function Journey() {
               duration: 0.5,
               ease: "back.out(2.2)",
               stagger: 0.16,
+              immediateRender: false,
               scrollTrigger: {
                 trigger: rootEl.querySelector("[data-node='orderly']"),
                 start: "top 72%",
@@ -133,6 +135,7 @@ export function Journey() {
               duration: 0.44,
               ease: "back.out(1.7)",
               stagger: 0.11,
+              immediateRender: false,
               scrollTrigger: {
                 trigger: rootEl.querySelector("[data-node='pos']"),
                 start: "top 72%",
@@ -150,6 +153,7 @@ export function Journey() {
           if (fired) gsap.set(fired, { opacity: 1, scale: 1, rotate: 9 });
         } else if (ticket && fired) {
           const tl4 = gsap.timeline({
+            immediateRender: false,
             scrollTrigger: {
               trigger: rootEl.querySelector("[data-node='kitchen']"),
               start: "top 74%",
@@ -196,6 +200,7 @@ export function Journey() {
           {
             drawSVG: "100%",
             ease: "none",
+            immediateRender: false,
             scrollTrigger: {
               trigger: rootEl,
               start: "top 68%",
@@ -213,6 +218,7 @@ export function Journey() {
             autoRotate: true,
           },
           ease: "none",
+          immediateRender: false,
           scrollTrigger: {
             trigger: rootEl,
             start: "top 68%",
@@ -232,6 +238,7 @@ export function Journey() {
           {
             scaleY: 1,
             ease: "none",
+            immediateRender: false,
             scrollTrigger: {
               trigger: rootEl,
               start: "top 76%",
@@ -374,9 +381,9 @@ export function Journey() {
                 <div className="jprint">
                   <div className="jticket" data-printed>
                     <span className="t-label">Table 12</span>
-                    <span className="t-label">1× btr chkn › mild</span>
-                    <span className="t-label">1× kofta</span>
-                    <span className="t-label">1× naan</span>
+                    <span className="t-label">1× smash › mild</span>
+                    <span className="t-label">1× mac</span>
+                    <span className="t-label">1× fries</span>
                   </div>
                   <span className="jfired t-label" data-fired>
                     Fired

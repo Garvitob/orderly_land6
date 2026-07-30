@@ -70,6 +70,7 @@ export function WeAreNot() {
 
       mm.add("(min-width: 1024px)", () => {
         const tl = gsap.timeline({
+          immediateRender: false,
           scrollTrigger: {
             trigger: rootEl,
             start: "top top",
@@ -110,6 +111,7 @@ export function WeAreNot() {
           const row = rootEl.querySelectorAll<HTMLElement>("[data-pair]")[i];
           if (!row) return;
           const tl = gsap.timeline({
+            immediateRender: false,
             scrollTrigger: { trigger: row, start: "top 78%", once: true },
           });
           tl.to(strikes[i], { drawSVG: "100%", duration: 0.32, ease: "none" }, 0)

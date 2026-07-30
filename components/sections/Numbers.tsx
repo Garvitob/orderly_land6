@@ -49,6 +49,7 @@ export function Numbers() {
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
+        immediateRender: false,
         scrollTrigger: { trigger: rootEl, start: "top 72%", once: true },
       });
 

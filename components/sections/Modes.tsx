@@ -32,7 +32,7 @@ const PANELS = [
   },
 ] as const;
 
-const ROWS = ["Butter Chicken", "Malai Kofta", "Garlic Naan", "Mango Lassi"];
+const ROWS = ["Smash Burger", "Mac and Cheese", "Garlic Fries", "Vanilla Shake"];
 
 /**
  * §8.6 FOUR WAYS IN. Answers: what if my guests hate talking to machines?
@@ -64,6 +64,7 @@ export function Modes() {
         duration: 0.8,
         ease: "shift",
         stagger: 0.07,
+        immediateRender: false,
         scrollTrigger: { trigger: rootEl, start: "top 74%", once: true },
       });
     }, rootEl);
@@ -113,7 +114,7 @@ export function Modes() {
                   <div className="mini-chat">
                     <p className="mini-bubble t-serif is-g">is this gluten free?</p>
                     <p className="mini-bubble t-serif is-o">
-                      Paneer tikka is, and the dal makhani.
+                      The farm salad is, and the Nashville hot without the bun.
                     </p>
                   </div>
                 ) : null}
@@ -137,7 +138,7 @@ export function Modes() {
 
                 {p.id === "upsell" ? (
                   <div className="mini-upsell">
-                    <span className="chip">Garlic naan</span>
+                    <span className="chip">Garlic fries</span>
                     <span className="mini-total tnum">
                       {money(28.95)} <em>→</em> {money(32.45)}
                     </span>

@@ -49,6 +49,7 @@ export function Close() {
           rotate: -7,
           duration: 0.8,
           ease: "elastic.out(1, 0.4)",
+          immediateRender: false,
           scrollTrigger: { trigger: rootEl, start: "top 76%", once: true },
         },
       );

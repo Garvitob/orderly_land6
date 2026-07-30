@@ -41,7 +41,7 @@ export const COPY = {
     headline: "A conversation, not a form.",
     subhead:
       "Your guest scans the code on the table and talks. Orderly answers questions, handles what they cannot eat, and takes payment. You get a clean ticket.",
-    venue: "Saffron House",
+    venue: "Copper Skillet",
     table: "Table 12",
   },
 

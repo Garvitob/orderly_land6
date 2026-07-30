@@ -1895,13 +1895,15 @@ svg {
   grid-column: 5 / -1;
 }
 
+/* 62vh left ~400px of void under 150px of content, which read as four empty
+   boxes. Sized to the content instead, and the mini-animation sits directly
+   under the copy rather than being pushed to the floor. */
 .panels {
   grid-column: 5 / -1;
   margin-top: var(--sp-tight);
   display: flex;
   gap: 2px;
-  height: 62vh;
-  min-height: 420px;
+  height: clamp(360px, 44vh, 440px);
 }
 
 .panel {
@@ -1958,10 +1960,29 @@ svg {
 }
 
 .panel-anim {
-  margin-top: auto;
-  min-height: 120px;
+  margin-top: 4px;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
+}
+
+/* Collapsed panels carry a hairline and a number so the row reads as a set of
+   four choices rather than four blank slabs. */
+.panel::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: var(--text);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 450ms var(--ease-out);
+}
+
+.panel.is-open::after {
+  background: var(--orange);
+  transform: scaleX(1);
 }
 
 .mini-chat {
