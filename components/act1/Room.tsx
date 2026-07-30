@@ -8,6 +8,7 @@ import { Label } from "@/components/primitives/Label";
 import { Button, TextLink } from "@/components/primitives/Button";
 import { HeroVideo } from "./HeroVideo";
 import { Overheard } from "./Overheard";
+import { ScrollCue } from "./ScrollCue";
 
 /**
  * §8.2 THE ROOM. Answers: what is this, and is it for someone like me?
@@ -101,6 +102,8 @@ export function Room() {
           </div>
         </div>
       </div>
+
+      <ScrollCue />
     </section>
   );
 }

@@ -48,26 +48,28 @@ export function Overheard() {
         const out = i * HOLD + (HOLD - FADE);
         const next = lines[(i + 1) % lines.length];
 
-        // A pure cross-fade at one position turns two sentences into mush for
-        // the whole 520ms overlap. Watched it, it was illegible. The overlap
-        // stays at the specified 520ms; the outgoing line lifts 8px and the
-        // incoming rises 8px so the two states are spatially separable while
-        // they cross. Transform and opacity only.
-        tl.to(line, { opacity: 0, y: -8, duration: FADE, ease: "none" }, out);
+        // Two sentences dissolving through each other at one position is
+        // unreadable, and an 8px offset was not enough separation: watched it
+        // at 50/50 and it smeared. The 520ms is kept exactly, but spent as a
+        // hand-off rather than a dissolve. The outgoing line leaves on ease-in
+        // over 220ms, then the incoming arrives on ease-out over 300ms. Never
+        // two sentences on screen at once, and never ease-in on something
+        // appearing.
+        tl.to(line, { opacity: 0, y: -10, duration: 0.22, ease: "power1.in" }, out);
         tl.fromTo(
           next,
-          { opacity: 0, y: 8 },
+          { opacity: 0, y: 10 },
           {
             opacity: 1,
             y: 0,
-            duration: FADE,
-            ease: "none",
+            duration: 0.3,
+            ease: "power2.out",
             // fromTo defaults to immediateRender:true, which fires every
             // from-state at creation and leaves the wrong line showing at
             // load. The timeline must honour its own positions.
             immediateRender: false,
           },
-          out,
+          out + 0.22,
         );
       });
     }, el);

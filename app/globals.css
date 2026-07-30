@@ -504,6 +504,50 @@ svg {
   flex-wrap: wrap;
 }
 
+/* §8.2 scroll cue. Bottom centre. */
+.scrollcue {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+}
+
+.scrollcue-track {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 28px;
+  background: var(--act1-rule);
+  overflow: hidden;
+}
+
+.scrollcue-seg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 6px;
+  background: var(--act1-text);
+  animation: cue-travel 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.scrollcue-lab {
+  opacity: 0.6;
+}
+
+@keyframes cue-travel {
+  0% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(28px);
+  }
+}
+
 .overheard {
   margin-top: 34px;
 }
