@@ -2260,7 +2260,10 @@ svg {
 }
 
 /* §10.4: the panels still explain themselves, they just stop moving. Each
-   mini holds its first frame, which is a legible state for all four. */
+   mini holds its first frame, which is a legible state for all four.
+   "§8.6 all panels expanded, static" is the requirement, and hover-to-expand
+   cannot satisfy it, so at ANY width the bank stacks and every panel is open.
+   Same shape as the mobile block below 1024, which already does exactly this. */
 @media (prefers-reduced-motion: reduce) {
   .mini-list-track,
   .mini-list li,
@@ -2270,6 +2273,29 @@ svg {
   .mini-bubble {
     opacity: 1;
     transform: none;
+  }
+  .panels {
+    flex-direction: column;
+    height: auto;
+    gap: 12px;
+  }
+  .panel {
+    flex: none;
+  }
+  .panel-spine {
+    display: none;
+  }
+  .panel-open {
+    position: relative;
+    inset: auto;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .panel-anim {
+    min-height: 190px;
+  }
+  .modes-index {
+    display: none;
   }
 }
 .mini-total {

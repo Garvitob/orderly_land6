@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap, initGsap } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/lib/useReducedMotion";
+import { useMediaQuery, DESKTOP } from "@/lib/useMediaQuery";
 import { Label } from "@/components/primitives/Label";
 
 const NODES = [
@@ -60,6 +61,14 @@ export function Journey() {
   const path = useRef<SVGPathElement | null>(null);
   const rider = useRef<SVGGElement | null>(null);
   const players = useRef<Record<string, () => void>>({});
+  /* The desktop/mobile split is driven from React rather than
+     gsap.matchMedia. matchMedia reverts its old context and builds the new one
+     synchronously inside the resize event, which splices ScrollTrigger's
+     _triggers array while a sibling trigger's init is walking it, and the walk
+     then reads _triggers[i] as undefined and throws on .end. Reading the query
+     through useSyncExternalStore re-runs this effect after paint instead, so
+     the teardown and the rebuild never interleave. */
+  const isDesktop = useMediaQuery(DESKTOP);
 
   const replay = (id: string) => {
     players.current[id]?.();
@@ -68,12 +77,9 @@ export function Journey() {
   useEffect(() => {
     initGsap();
     const rootEl = root.current;
-    const pathEl = path.current;
-    const riderEl = rider.current;
     if (!rootEl) return;
 
     const reduced = prefersReducedMotion();
-    const mm = gsap.matchMedia();
 
     const ctx = gsap.context(() => {
       /* ── the four node animations, shared by desktop and mobile ────── */
@@ -294,11 +300,30 @@ export function Journey() {
           },
         );
       });
+    }, rootEl);
 
+    return () => {
+      ctx.revert();
+    };
+    // Deliberately NOT keyed on isDesktop. These are once:true reveals, and
+    // rebuilding them on a breakpoint change reverts each one to its "from"
+    // state with its trigger already scrolled past, so a node the reader had
+    // already seen would blank out and never come back.
+  }, []);
+
+  /* Only the media-specific half rebuilds when the breakpoint crosses. */
+  useEffect(() => {
+    initGsap();
+    const rootEl = root.current;
+    const pathEl = path.current;
+    const riderEl = rider.current;
+    if (!rootEl) return;
+
+    const reduced = prefersReducedMotion();
+
+    const ctx = gsap.context(() => {
       /* ── the receipt rides the path, desktop only ──────────────────── */
-      mm.add("(min-width: 1024px)", () => {
-        if (!pathEl || !riderEl || reduced) return;
-
+      if (isDesktop && pathEl && riderEl && !reduced) {
         gsap.fromTo(
           pathEl,
           { drawSVG: "0%" },
@@ -331,35 +356,35 @@ export function Journey() {
             scrub: true,
           },
         });
-      });
+      }
 
       /* ── mobile: a straight vertical line, drawn with scaleY ───────── */
-      mm.add("(max-width: 1023px)", () => {
+      if (!isDesktop && !reduced) {
         const spine = rootEl.querySelector<HTMLElement>("[data-jspine]");
-        if (!spine || reduced) return;
-        gsap.fromTo(
-          spine,
-          { scaleY: 0 },
-          {
-            scaleY: 1,
-            ease: "none",
-            immediateRender: false,
-            scrollTrigger: {
-              trigger: rootEl,
-              start: "top 76%",
-              end: "bottom 76%",
-              scrub: true,
+        if (spine) {
+          gsap.fromTo(
+            spine,
+            { scaleY: 0 },
+            {
+              scaleY: 1,
+              ease: "none",
+              immediateRender: false,
+              scrollTrigger: {
+                trigger: rootEl,
+                start: "top 76%",
+                end: "bottom 76%",
+                scrub: true,
+              },
             },
-          },
-        );
-      });
+          );
+        }
+      }
     }, rootEl);
 
     return () => {
-      mm.revert();
       ctx.revert();
     };
-  }, []);
+  }, [isDesktop]);
 
   return (
     <section id="journey" ref={root} className="journey">

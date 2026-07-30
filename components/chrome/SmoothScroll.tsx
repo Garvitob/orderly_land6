@@ -15,10 +15,30 @@ export function SmoothScroll() {
   useEffect(() => {
     initGsap();
 
+    /* initGsap takes "resize" out of ScrollTrigger's autoRefreshEvents to stop
+       it racing gsap.matchMedia, so this is now the ONLY thing that refreshes
+       after a resize and it has to be registered on both paths. A resize can
+       land mid-page, and refresh measures pins from scroll 0, so it also has to
+       put the reader back where they were. */
+    let resizeTimer = 0;
+    const onResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(
+        () => refreshPreservingScroll(() => ScrollTrigger.refresh()),
+        180,
+      );
+    };
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
+
     if (prefersReducedMotion()) {
       // No Lenis at all. Native scroll, no pins, no scrubs.
       ScrollTrigger.refresh();
-      return;
+      return () => {
+        window.removeEventListener("resize", onResize);
+        window.removeEventListener("orientationchange", onResize);
+        window.clearTimeout(resizeTimer);
+      };
     }
 
     const lenis = new Lenis({ lerp: 0.09 });
@@ -42,19 +62,6 @@ export function SmoothScroll() {
     const settleTimers = [400, 1200, 2400].map((ms) =>
       window.setTimeout(refresh, ms),
     );
-
-    /* A resize can land mid-page, and refresh measures pins from scroll 0, so
-       this one has to put the reader back where they were. */
-    let resizeTimer = 0;
-    const onResize = () => {
-      window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(
-        () => refreshPreservingScroll(() => ScrollTrigger.refresh()),
-        180,
-      );
-    };
-    window.addEventListener("resize", onResize);
-    window.addEventListener("orientationchange", onResize);
 
     return () => {
       window.removeEventListener("load", refresh);

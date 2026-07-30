@@ -40,8 +40,17 @@ export function VoiceBars({ live }: { live: boolean }) {
     const values = new Float32Array(BARS);
     const targets = new Float32Array(BARS);
 
-    const ink = () =>
-      getComputedStyle(el).getPropertyValue("--bar-color").trim() || "#201A16";
+    /* Canvas cannot read a CSS variable, so the value is resolved here. The
+       fallback chain stays inside the token system rather than repeating Ink as
+       a literal, which §4.1 forbids outside the three token blocks. */
+    const ink = () => {
+      const cs = getComputedStyle(el);
+      return (
+        cs.getPropertyValue("--bar-color").trim() ||
+        cs.getPropertyValue("--text").trim() ||
+        cs.color
+      );
+    };
 
     const paint = () => {
       const w = el.clientWidth;

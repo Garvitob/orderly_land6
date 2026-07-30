@@ -34,6 +34,18 @@ export function initGsap(): void {
     CustomEase.create("shift", "M0,0 C0.22,1 0.36,1 1,1");
   }
 
+  /* "resize" is deliberately NOT in this list. A resize fires two things at
+     once: ScrollTrigger's own auto-refresh, and every gsap.matchMedia context
+     reverting and rebuilding. Reverting splices _triggers while a refresh is
+     walking that same array backwards from its own index, so refresh() reads
+     _triggers[i] as undefined and throws on .end. That is the
+     "Cannot read properties of undefined (reading 'end')" this page logged on
+     every resize. SmoothScroll does one debounced refresh 180ms after the
+     resize settles instead, by which point the matchMedia churn is finished. */
+  ScrollTrigger.config({
+    autoRefreshEvents: "visibilitychange,DOMContentLoaded,load",
+  });
+
   // Never let GSAP silently drop frames into a time jump during a scrub.
   gsap.ticker.lagSmoothing(0);
 
